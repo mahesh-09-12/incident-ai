@@ -1,1 +1,8 @@
 .env.example
+.agents
+.env
+test_db.py
+test-error.log
+payment-error.log
+storage
+settings.json
