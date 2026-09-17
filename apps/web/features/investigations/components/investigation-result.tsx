@@ -13,6 +13,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function InvestigationResult({ incidentId, investigationId }: { incidentId: string; investigationId: string }) {
   const { data: investigation, isLoading, isError, error, refetch } = useInvestigation(incidentId, investigationId);
@@ -20,16 +24,16 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
 
   if (isLoading) {
     return (
-      <div className="animate-pulse space-y-6" aria-busy="true">
-        <div className="h-8 w-1/3 bg-slate-800 rounded"></div>
-        <div className="h-4 w-1/4 bg-slate-800 rounded"></div>
+      <div className="space-y-6" aria-busy="true">
+        <Skeleton className="h-8 w-1/3 bg-slate-800" />
+        <Skeleton className="h-4 w-1/4 bg-slate-800" />
         <div className="space-y-4 mt-8">
-          <div className="h-6 w-1/4 bg-slate-800 rounded"></div>
-          <div className="h-24 w-full bg-slate-800 rounded"></div>
+          <Skeleton className="h-6 w-1/4 bg-slate-800" />
+          <Skeleton className="h-24 w-full bg-slate-800" />
         </div>
         <div className="space-y-4 mt-6">
-          <div className="h-6 w-1/4 bg-slate-800 rounded"></div>
-          <div className="h-24 w-full bg-slate-800 rounded"></div>
+          <Skeleton className="h-6 w-1/4 bg-slate-800" />
+          <Skeleton className="h-24 w-full bg-slate-800" />
         </div>
       </div>
     );
@@ -76,15 +80,15 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
   const renderStatusBadge = (status: Investigation['status']) => {
     switch (status) {
       case 'COMPLETED':
-        return <span className="px-2 py-1 text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded">Completed</span>;
+        return <Badge className="bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 border-emerald-500/20">Completed</Badge>;
       case 'FAILED':
-        return <span className="px-2 py-1 text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20 rounded">Failed</span>;
+        return <Badge variant="destructive">Failed</Badge>;
       case 'RUNNING':
-        return <span className="px-2 py-1 text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded">Running</span>;
+        return <Badge className="bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border-blue-500/20">Running</Badge>;
       case 'PENDING':
-        return <span className="px-2 py-1 text-xs font-medium bg-slate-500/10 text-slate-400 border border-slate-500/20 rounded">Pending</span>;
+        return <Badge variant="secondary">Pending</Badge>;
       default:
-        return <span className="px-2 py-1 text-xs font-medium bg-slate-500/10 text-slate-400 border border-slate-500/20 rounded">{status}</span>;
+        return <Badge variant="secondary">{status}</Badge>;
     }
   };
 
@@ -178,32 +182,46 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
 
       {investigation.status === 'COMPLETED' && (
         <div className="space-y-6">
-          <section className="bg-slate-900 border border-slate-800 rounded-lg p-5 sm:p-6">
-            <h2 className="text-lg font-semibold text-slate-200 mb-3 border-b border-slate-800 pb-2">
-              Summary
-            </h2>
-            <div className="whitespace-pre-wrap text-sm text-slate-300 leading-relaxed break-words">
-              {investigation.summary || 'No summary available.'}
-            </div>
-          </section>
+          <Alert className="bg-indigo-500/10 text-indigo-200 border-indigo-500/20">
+            <AlertTitle className="text-indigo-400 font-semibold">AI-Generated Analysis</AlertTitle>
+            <AlertDescription className="text-indigo-200/80 mt-2">
+              This investigation report was generated automatically by an AI model based on the provided evidence. 
+              Please review and verify these conclusions carefully, as AI analysis may be incomplete or inaccurate and should not be treated as guaranteed fact.
+            </AlertDescription>
+          </Alert>
 
-          <section className="bg-slate-900 border border-slate-800 rounded-lg p-5 sm:p-6">
-            <h2 className="text-lg font-semibold text-slate-200 mb-3 border-b border-slate-800 pb-2">
-              Root Cause
-            </h2>
-            <div className="whitespace-pre-wrap text-sm text-slate-300 leading-relaxed break-words">
-              {investigation.root_cause || 'No root cause identified.'}
-            </div>
-          </section>
+          <Card className="bg-slate-900 border-slate-800">
+            <CardHeader>
+              <CardTitle className="text-lg text-slate-200">Summary</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="whitespace-pre-wrap text-sm text-slate-300 leading-relaxed break-words">
+                {investigation.summary || 'No summary available.'}
+              </div>
+            </CardContent>
+          </Card>
 
-          <section className="bg-slate-900 border border-slate-800 rounded-lg p-5 sm:p-6">
-            <h2 className="text-lg font-semibold text-slate-200 mb-3 border-b border-slate-800 pb-2">
-              Recommendations
-            </h2>
-            <div className="whitespace-pre-wrap text-sm text-slate-300 leading-relaxed break-words">
-              {investigation.recommendations || 'No recommendations provided.'}
-            </div>
-          </section>
+          <Card className="bg-slate-900 border-slate-800">
+            <CardHeader>
+              <CardTitle className="text-lg text-slate-200">Root Cause</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="whitespace-pre-wrap text-sm text-slate-300 leading-relaxed break-words">
+                {investigation.root_cause || 'No root cause identified.'}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-slate-900 border-slate-800">
+            <CardHeader>
+              <CardTitle className="text-lg text-slate-200">Recommendations</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="whitespace-pre-wrap text-sm text-slate-300 leading-relaxed break-words">
+                {investigation.recommendations || 'No recommendations provided.'}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
