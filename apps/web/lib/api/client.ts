@@ -28,7 +28,12 @@ export async function fetchApi<T>(endpoint: string, options: FetchOptions = {}):
 
   // Construct URL, ensuring endpoint is formatted correctly
   const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  const url = new URL(path, API_BASE_URL);
+  
+  // Use relative URL on the client to hit the Next.js proxy and avoid CORS.
+  // Use absolute URL on the server since relative fetch is not supported in Node without a base URL.
+  const isServer = typeof window === 'undefined';
+  const baseUrl = isServer ? API_BASE_URL : '';
+  const url = baseUrl ? new URL(path, baseUrl) : new URL(path, window.location.origin);
   
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
@@ -88,12 +93,17 @@ export const apiClient = {
     fetchApi<T>(endpoint, { ...options, method: 'GET' }),
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  post: <T>(endpoint: string, data?: any, options?: Omit<FetchOptions, 'method' | 'body'>) => 
-    fetchApi<T>(endpoint, { 
+  post: <T>(endpoint: string, data?: any, options?: Omit<FetchOptions, 'method' | 'body'>) => {
+    let body;
+    if (data !== undefined) {
+      body = data instanceof FormData ? data : JSON.stringify(data);
+    }
+    return fetchApi<T>(endpoint, { 
       ...options, 
       method: 'POST', 
-      body: data ? JSON.stringify(data) : undefined,
-    }),
+      body,
+    });
+  },
     
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   patch: <T>(endpoint: string, data?: any, options?: Omit<FetchOptions, 'method' | 'body'>) => 

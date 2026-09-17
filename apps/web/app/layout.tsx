@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "IncidentAI — AI-Assisted Incident Investigation Platform",
+  title: "IncidentAI - AI-Assisted Incident Investigation Platform",
   description: "AI-assisted incident investigation and root cause analysis platform",
 };
 
