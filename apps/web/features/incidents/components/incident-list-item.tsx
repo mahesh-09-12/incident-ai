@@ -45,7 +45,7 @@ export function IncidentListItem({ incident }: { incident: Incident }) {
           </div>
           
           <div className="flex-shrink-0 flex sm:flex-col items-center sm:items-end justify-between sm:justify-start">
-            <time dateTime={incident.created_at} className="text-xs text-slate-500 font-mono">
+            <time dateTime={incident.created_at} className="text-xs text-slate-500">
               {createdDate}
             </time>
           </div>

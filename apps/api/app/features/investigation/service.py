@@ -1,8 +1,9 @@
 from uuid import UUID
 
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 
+from app.db.session import SessionLocal
 from app.features.incident.repository import IncidentRepository
 from app.features.investigation.repository import InvestigationRepository
 from app.features.evidence.repository import EvidenceRepository
@@ -19,7 +20,7 @@ class InvestigationService:
         self.incident_repository = IncidentRepository(db)
         self.evidence_repository = EvidenceRepository(db)
 
-    def create_investigation(self, incident_id: UUID):
+    def create_investigation(self, incident_id: UUID, background_tasks: BackgroundTasks):
         incident = self.incident_repository.get_by_id(incident_id)
 
         if not incident:
@@ -46,34 +47,47 @@ class InvestigationService:
             investigation
         )
 
-        graph = build_investigation_graph()
+        background_tasks.add_task(
+            self.run_investigation_background,
+            investigation.id,
+            incident_id,
+        )
 
-        initial_state = {
-            "investigation_id": investigation.id,
-            "incident_id": incident_id,
-            "incident": None,
-            "evidence": [],
-            "analysis": None,
-            "summary": None,
-            "root_cause": None,
-            "recommendations": None,
-            "error": None,
-        }
+        return investigation
 
+    @staticmethod
+    def run_investigation_background(investigation_id: UUID, incident_id: UUID):
+        db = SessionLocal()
         try:
+            repo = InvestigationRepository(db)
+            investigation = repo.get_by_id(investigation_id)
+            if not investigation:
+                return
+
+            graph = build_investigation_graph()
+
+            initial_state = {
+                "investigation_id": investigation.id,
+                "incident_id": incident_id,
+                "incident": None,
+                "evidence": [],
+                "analysis": None,
+                "summary": None,
+                "root_cause": None,
+                "recommendations": None,
+                "error": None,
+            }
+
             graph.invoke(
                 initial_state,
                 context=InvestigationContext(
-                    db=self.investigation_repository.db
+                    db=db
                 ),
             )
         except Exception:
-            self.investigation_repository.mark_failed(
-                investigation
-            )
-            raise
-
-        return investigation
+            repo.mark_failed(investigation)
+        finally:
+            db.close()
     
     def get_investigation(
         self,

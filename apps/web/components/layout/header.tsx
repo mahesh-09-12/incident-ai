@@ -49,16 +49,13 @@ export function Header({ isMobileOpen, onToggleMobile }: HeaderProps) {
           </svg>
         </button>
 
-        <h1 className="text-lg font-semibold text-slate-100 font-mono tracking-tight">
+        <h1 className="text-lg font-semibold text-slate-100 tracking-tight">
           {pageTitle}
         </h1>
       </div>
 
       <div className="flex items-center gap-3">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-900/60 bg-emerald-950/40 px-2.5 py-1 text-xs font-mono font-medium text-emerald-400">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          API Connected
-        </span>
+        {/* Placeholder for future header actions */}
       </div>
     </header>
   );

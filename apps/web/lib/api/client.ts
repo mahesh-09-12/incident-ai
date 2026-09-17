@@ -52,19 +52,20 @@ export async function fetchApi<T>(endpoint: string, options: FetchOptions = {}):
     let errorMessage = response.statusText;
     let errorData = null;
 
-    try {
-      const data = await response.json();
-      errorData = data;
-      if (data && typeof data.detail === 'string') {
-        errorMessage = data.detail;
-      } else if (data && data.detail) {
-        errorMessage = JSON.stringify(data.detail);
-      } else if (data && data.message) {
-        errorMessage = data.message;
-      }
-    } catch {
-      const text = await response.text();
-      if (text) {
+    const text = await response.text();
+    
+    if (text) {
+      try {
+        const data = JSON.parse(text);
+        errorData = data;
+        if (data && typeof data.detail === 'string') {
+          errorMessage = data.detail;
+        } else if (data && data.detail) {
+          errorMessage = JSON.stringify(data.detail);
+        } else if (data && data.message) {
+          errorMessage = data.message;
+        }
+      } catch {
         errorMessage = text;
       }
     }

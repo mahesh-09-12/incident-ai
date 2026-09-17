@@ -45,7 +45,7 @@ export function Sidebar({ isMobileOpen, onCloseMobile }: SidebarProps) {
             <span className="flex h-7 w-7 items-center justify-center rounded bg-blue-600 text-xs font-bold text-white shadow-xs">
               AI
             </span>
-            <span className="text-base tracking-tight font-mono">IncidentAI</span>
+            <span className="text-base tracking-tight">IncidentAI</span>
           </Link>
           <button
             type="button"
@@ -71,7 +71,7 @@ export function Sidebar({ isMobileOpen, onCloseMobile }: SidebarProps) {
 
         {/* Navigation Links */}
         <nav className="flex-1 overflow-y-auto px-3 py-4" aria-label="Sidebar Navigation">
-          <div className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500 font-mono">
+          <div className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
             Navigation
           </div>
           <ul className="space-y-1">
@@ -102,7 +102,7 @@ export function Sidebar({ isMobileOpen, onCloseMobile }: SidebarProps) {
         </nav>
 
         {/* Footer info / environment */}
-        <div className="border-t border-slate-800 p-4 font-mono text-xs text-slate-500">
+        <div className="border-t border-slate-800 p-4 text-xs text-slate-500">
           <div>Env: Production</div>
           <div>Version: v0.1.0</div>
         </div>

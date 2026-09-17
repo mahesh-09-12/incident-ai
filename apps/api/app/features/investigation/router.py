@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, BackgroundTasks
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
@@ -20,11 +20,12 @@ router = APIRouter(
 )
 def create_investigation(
     incident_id: UUID,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
     service = InvestigationService(db)
 
-    return service.create_investigation(incident_id)
+    return service.create_investigation(incident_id, background_tasks)
 
 
 @router.get(
