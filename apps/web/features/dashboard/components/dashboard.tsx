@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useIncidents } from '@/features/incidents/hooks';
+import { useDashboardStats } from '../hooks';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -12,30 +13,28 @@ import { IncidentListItem } from '@/features/incidents/components/incident-list-
 import { AlertCircle, Plus } from 'lucide-react';
 
 export function Dashboard() {
-  const { data: incidents, isLoading, isError, error, refetch } = useIncidents();
-
-  const total = incidents?.length || 0;
-  const open = incidents?.filter(i => i.status.toLowerCase() === 'open').length || 0;
-  const investigating = incidents?.filter(i => i.status.toLowerCase() === 'investigating').length || 0;
-  const completed = incidents?.filter(i => ['resolved', 'closed'].includes(i.status.toLowerCase())).length || 0;
+  const { data: incidents, isLoading: isIncidentsLoading, isError: isIncidentsError, error: incidentsError, refetch: refetchIncidents } = useIncidents();
+  const { data: stats, isLoading: isStatsLoading, isError: isStatsError, error: statsError, refetch: refetchStats } = useDashboardStats();
 
   const sortedIncidents = incidents 
     ? [...incidents].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) 
     : [];
   const recentIncidents = sortedIncidents.slice(0, 5);
 
-  if (isError) {
+  if (isIncidentsError || isStatsError) {
+    const errorMsg = isIncidentsError 
+      ? (incidentsError instanceof Error ? incidentsError.message : 'An unexpected error occurred while communicating with the server.')
+      : (statsError instanceof Error ? statsError.message : 'An unexpected error occurred while communicating with the server.');
+
     return (
       <div className="w-full max-w-6xl mx-auto py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
         <Alert variant="destructive" className="max-w-2xl mx-auto">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Error loading dashboard</AlertTitle>
           <AlertDescription className="mt-2 flex flex-col gap-4">
-            <p>
-              {error instanceof Error ? error.message : 'An unexpected error occurred while communicating with the server.'}
-            </p>
+            <p>{errorMsg}</p>
             <div>
-              <Button onClick={() => refetch()} variant="destructive">
+              <Button onClick={() => { refetchIncidents(); refetchStats(); }} variant="destructive">
                 Retry request
               </Button>
             </div>
@@ -73,49 +72,49 @@ export function Dashboard() {
             <CardTitle className="text-sm font-medium text-slate-400">Total Incidents</CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {isStatsLoading ? (
               <Skeleton className="h-8 w-16 bg-slate-800" />
             ) : (
-              <div className="text-2xl font-bold text-slate-100">{total}</div>
+              <div className="text-2xl font-bold text-slate-100">{stats?.total_incidents || 0}</div>
             )}
           </CardContent>
         </Card>
 
         <Card className="bg-slate-900 border-slate-800">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-slate-400">Open</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-400">Open Incidents</CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {isStatsLoading ? (
               <Skeleton className="h-8 w-16 bg-slate-800" />
             ) : (
-              <div className="text-2xl font-bold text-slate-100">{open}</div>
+              <div className="text-2xl font-bold text-slate-100">{stats?.open_incidents || 0}</div>
             )}
           </CardContent>
         </Card>
 
         <Card className="bg-slate-900 border-slate-800">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-slate-400">Investigating</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-400">Investigations Running</CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {isStatsLoading ? (
               <Skeleton className="h-8 w-16 bg-slate-800" />
             ) : (
-              <div className="text-2xl font-bold text-indigo-400">{investigating}</div>
+              <div className="text-2xl font-bold text-indigo-400">{stats?.investigations_running || 0}</div>
             )}
           </CardContent>
         </Card>
 
         <Card className="bg-slate-900 border-slate-800">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-            <CardTitle className="text-sm font-medium text-slate-400">Completed</CardTitle>
+            <CardTitle className="text-sm font-medium text-slate-400">Investigations Completed</CardTitle>
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {isStatsLoading ? (
               <Skeleton className="h-8 w-16 bg-slate-800" />
             ) : (
-              <div className="text-2xl font-bold text-emerald-400">{completed}</div>
+              <div className="text-2xl font-bold text-emerald-400">{stats?.investigations_completed || 0}</div>
             )}
           </CardContent>
         </Card>
@@ -135,7 +134,7 @@ export function Dashboard() {
           </Link>
         </div>
 
-        {isLoading ? (
+        {isIncidentsLoading ? (
           <div className="flex flex-col gap-4">
             {[1, 2, 3].map((i) => (
               <Skeleton key={i} className="h-32 w-full bg-slate-900 border border-slate-800 rounded-lg" />

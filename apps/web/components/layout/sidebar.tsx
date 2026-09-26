@@ -9,7 +9,7 @@ interface SidebarProps {
 }
 
 const NAV_ITEMS = [
-  { label: "Dashboard", href: "/" },
+  { label: "Dashboard", href: "/dashboard" },
   { label: "Incidents", href: "/incidents" },
 ];
 
