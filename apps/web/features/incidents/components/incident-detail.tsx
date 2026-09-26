@@ -143,7 +143,7 @@ export function IncidentDetail({ incidentId }: { incidentId: string }) {
             Edit Incident
           </h1>
         </header>
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-5 sm:p-6">
+        <div className="glass-panel rounded-lg p-5 sm:p-6">
           <IncidentEditForm 
             incident={incident} 
             onCancel={() => setIsEditing(false)} 

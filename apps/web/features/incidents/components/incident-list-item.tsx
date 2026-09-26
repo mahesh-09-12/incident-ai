@@ -16,7 +16,7 @@ export function IncidentListItem({ incident }: { incident: Incident }) {
   });
 
   return (
-    <li className="group border border-slate-800 bg-slate-900 hover:bg-slate-800/50 hover:border-slate-700 rounded-lg transition-colors overflow-hidden">
+    <li className="group glass-panel neon-glow-hover rounded-lg transition-all overflow-hidden">
       <Link href={`/incidents/${incident.id}`} className="block p-4 sm:p-6 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-inset rounded-lg">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           

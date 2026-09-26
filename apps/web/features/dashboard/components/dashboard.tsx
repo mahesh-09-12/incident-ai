@@ -67,7 +67,7 @@ export function Dashboard() {
 
       {/* Incident Overview Stats */}
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-slate-900 border-slate-800">
+        <Card className="glass-panel neon-glow-hover">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-slate-400">Total Incidents</CardTitle>
           </CardHeader>
@@ -80,7 +80,7 @@ export function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900 border-slate-800">
+        <Card className="glass-panel neon-glow-hover">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-slate-400">Open Incidents</CardTitle>
           </CardHeader>
@@ -93,7 +93,7 @@ export function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900 border-slate-800">
+        <Card className="glass-panel neon-glow-hover">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-slate-400">Investigations Running</CardTitle>
           </CardHeader>
@@ -106,7 +106,7 @@ export function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-slate-900 border-slate-800">
+        <Card className="glass-panel neon-glow-hover">
           <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-medium text-slate-400">Investigations Completed</CardTitle>
           </CardHeader>
@@ -137,7 +137,7 @@ export function Dashboard() {
         {isIncidentsLoading ? (
           <div className="flex flex-col gap-4">
             {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className="h-32 w-full bg-slate-900 border border-slate-800 rounded-lg" />
+              <Skeleton key={i} className="h-32 w-full glass-panel rounded-lg" />
             ))}
           </div>
         ) : recentIncidents.length > 0 ? (

@@ -85,7 +85,7 @@ export function InvestigationList({ incidentId, hasEvidence }: { incidentId: str
 
   return (
     <div className="space-y-6 w-full max-w-full overflow-hidden">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-900 border border-slate-800 rounded-lg p-4 sm:p-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass-panel rounded-lg p-4 sm:p-5">
         <div>
           <h3 className="text-base font-medium text-slate-200">AI Investigation</h3>
           <p className="text-sm text-slate-400 mt-1 max-w-xl">
@@ -147,7 +147,7 @@ export function InvestigationList({ incidentId, hasEvidence }: { incidentId: str
           <>
             <ul className="space-y-3">
               {(showAllInvestigations ? investigations : investigations?.slice(0, 3))?.map((inv) => (
-                <li key={inv.id} className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <li key={inv.id} className="glass-panel neon-glow-hover rounded-lg p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-3">
                       <span className="text-sm font-medium text-slate-200 truncate">Run ID: {inv.id.substring(0, 8)}...</span>

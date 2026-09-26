@@ -12,7 +12,7 @@ export function IncidentList() {
     return (
       <div className="animate-pulse flex flex-col gap-4 w-full" aria-busy="true" aria-label="Loading incidents">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="border border-slate-800 bg-slate-900 rounded-lg p-4 sm:p-6 h-32 w-full">
+          <div key={i} className="glass-panel rounded-lg p-4 sm:p-6 h-32 w-full">
             <div className="flex items-center gap-3 mb-4">
               <div className="h-5 w-16 bg-slate-800 rounded"></div>
               <div className="h-5 w-16 bg-slate-800 rounded"></div>

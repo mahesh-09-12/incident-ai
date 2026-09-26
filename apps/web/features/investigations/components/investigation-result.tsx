@@ -255,7 +255,7 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
             </AlertDescription>
           </Alert>
 
-          <Card className="bg-slate-900 border-slate-800">
+          <Card className="glass-panel">
             <CardHeader>
               <CardTitle className="text-lg text-slate-200">Summary</CardTitle>
             </CardHeader>
@@ -266,7 +266,7 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
             </CardContent>
           </Card>
 
-          <Card className="bg-slate-900 border-slate-800">
+          <Card className="glass-panel">
             <CardHeader>
               <CardTitle className="text-lg text-slate-200">Most Supported Hypothesis</CardTitle>
             </CardHeader>
@@ -278,7 +278,7 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
           </Card>
 
           {investigation.hypotheses && investigation.hypotheses.length > 0 ? (
-            <Card className="bg-slate-900 border-slate-800">
+            <Card className="glass-panel">
               <CardHeader>
                 <CardTitle className="text-lg text-slate-200">Investigation Hypotheses</CardTitle>
               </CardHeader>
@@ -339,7 +339,7 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
           ) : (
             // Backward compatibility for legacy investigations
             <>
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className="glass-panel">
                 <CardHeader>
                   <CardTitle className="text-lg text-slate-200">Supporting Evidence</CardTitle>
                 </CardHeader>
@@ -348,7 +348,7 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
                 </CardContent>
               </Card>
               
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className="glass-panel">
                 <CardHeader>
                   <CardTitle className="text-lg text-slate-200">Contradicting Evidence</CardTitle>
                 </CardHeader>
@@ -357,7 +357,7 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
                 </CardContent>
               </Card>
 
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className="glass-panel">
                 <CardHeader>
                   <CardTitle className="text-lg text-slate-200">Missing Evidence / What to Investigate Next</CardTitle>
                 </CardHeader>
@@ -368,7 +368,7 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
             </>
           )}
 
-          <Card className="bg-slate-900 border-slate-800">
+          <Card className="glass-panel">
             <CardHeader>
               <CardTitle className="text-lg text-slate-200">Recommendations</CardTitle>
             </CardHeader>

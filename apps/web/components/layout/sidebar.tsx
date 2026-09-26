@@ -39,13 +39,13 @@ export function Sidebar({ isMobileOpen, onCloseMobile }: SidebarProps) {
         <div className="flex h-16 items-center justify-between border-b border-slate-800 px-5">
           <Link
             href="/"
-            className="flex items-center gap-2.5 font-semibold text-slate-50 focus-visible:outline-2 focus-visible:outline-blue-500"
+            className="flex items-center gap-2.5 font-semibold text-slate-50 focus-visible:outline-2 focus-visible:outline-indigo-500"
             onClick={onCloseMobile}
           >
-            <span className="flex h-7 w-7 items-center justify-center rounded bg-blue-600 text-xs font-bold text-white shadow-xs">
+            <span className="flex h-7 w-7 items-center justify-center rounded bg-indigo-600 neon-glow text-xs font-bold text-white shadow-xs">
               AI
             </span>
-            <span className="text-base tracking-tight">IncidentAI</span>
+            <span className="text-base tracking-tight font-bold">Incident<span className="text-indigo-400">AI</span></span>
           </Link>
           <button
             type="button"
@@ -87,9 +87,9 @@ export function Sidebar({ isMobileOpen, onCloseMobile }: SidebarProps) {
                     href={item.href}
                     onClick={onCloseMobile}
                     aria-current={isActive ? "page" : undefined}
-                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-blue-500 ${
+                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-all focus-visible:outline-2 focus-visible:outline-indigo-500 ${
                       isActive
-                        ? "bg-blue-950/70 text-blue-400 border border-blue-800/50"
+                        ? "bg-indigo-500/10 text-indigo-400 neon-border shadow-[inset_2px_0_0_0_rgba(99,102,241,1)]"
                         : "text-slate-400 hover:bg-slate-900 hover:text-slate-100"
                     }`}
                   >
