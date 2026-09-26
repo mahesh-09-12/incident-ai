@@ -237,14 +237,14 @@ export function IncidentEditForm({ incident, onCancel, onSuccess }: IncidentEdit
           type="button"
           onClick={onCancel}
           disabled={isSubmitting}
-          className="inline-flex justify-center rounded-md border border-slate-700 bg-transparent px-4 py-2 text-sm font-medium text-slate-300 shadow-sm hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-950 transition-colors w-full sm:w-auto"
+          className="inline-flex justify-center rounded-md border border-slate-700 bg-slate-800/80 px-4 py-2 text-sm font-medium text-slate-300 shadow-sm hover:bg-slate-700 hover:text-slate-200 hover:border-slate-600 hover:shadow-[0_0_15px_-3px_rgba(255,255,255,0.05)] focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-950 transition-all w-full sm:w-auto"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isSubmitting}
-          className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-50 transition-colors w-full sm:w-auto items-center"
+          className="inline-flex justify-center rounded-md border border-indigo-500/50 bg-indigo-600/20 px-4 py-2 text-sm font-medium text-indigo-300 neon-border shadow-[0_0_10px_-2px_rgba(99,102,241,0.3)] hover:bg-indigo-500/30 hover:shadow-[0_0_20px_-3px_rgba(99,102,241,0.6)] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-50 transition-all w-full sm:w-auto items-center"
         >
           {isSubmitting ? (
             <>

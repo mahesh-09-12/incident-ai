@@ -73,7 +73,7 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
         <p className="text-red-400/80 mb-6 text-sm max-w-md">{errorMessage}</p>
         <button 
           onClick={() => refetch()}
-          className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 cursor-pointer"
+          className="px-4 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-slate-200 border border-slate-700 hover:border-slate-600 hover:shadow-[0_0_15px_-3px_rgba(255,255,255,0.05)] rounded text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-slate-500 cursor-pointer"
         >
           Retry
         </button>
@@ -88,7 +88,7 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
         <p className="text-slate-500 text-sm mb-6">The investigation you requested does not exist.</p>
         <Link 
           href={`/incidents/${incidentId}`}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm font-medium transition-colors"
+          className="px-4 py-2 bg-indigo-600/20 text-indigo-300 hover:bg-indigo-500/30 neon-border shadow-[0_0_10px_-2px_rgba(99,102,241,0.3)] hover:shadow-[0_0_20px_-3px_rgba(99,102,241,0.6)] border border-indigo-500/50 rounded text-sm font-medium transition-all"
         >
           Back to Incident
         </Link>
@@ -197,7 +197,7 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
       <header className="border-b border-slate-800 pb-6">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-100 tracking-tight break-words">
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-100 tracking-tight break-words drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]">
               Investigation Report
             </h1>
             <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
@@ -213,7 +213,7 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
           <div className="flex-shrink-0">
              <Link 
               href={`/incidents/${incidentId}`}
-              className="inline-flex items-center px-4 py-2 border border-slate-700 bg-transparent hover:bg-slate-800 text-slate-300 rounded text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 w-full sm:w-auto justify-center"
+              className="inline-flex items-center px-4 py-2 border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-slate-200 hover:border-slate-600 hover:shadow-[0_0_15px_-3px_rgba(255,255,255,0.05)] rounded text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-slate-500 w-full sm:w-auto justify-center"
             >
               &larr; Back to Incident
             </Link>

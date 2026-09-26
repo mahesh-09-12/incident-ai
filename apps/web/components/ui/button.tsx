@@ -7,13 +7,13 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 neon-glow neon-glow-hover border border-primary/30",
+        default: "bg-indigo-600/20 text-indigo-300 hover:bg-indigo-500/30 neon-border hover:shadow-[0_0_20px_-3px_rgba(99,102,241,0.6)] border border-indigo-500/50 shadow-[0_0_10px_-2px_rgba(99,102,241,0.3)] transition-all",
         outline:
-          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+          "border-slate-700 bg-transparent hover:bg-slate-800 hover:text-slate-100 hover:border-slate-600 hover:shadow-[0_0_15px_-3px_rgba(255,255,255,0.05)] transition-all",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+          "bg-slate-800/80 text-slate-300 hover:bg-slate-700 hover:text-slate-200 border border-slate-700 hover:border-slate-600 hover:shadow-[0_0_15px_-3px_rgba(255,255,255,0.05)] transition-all",
         ghost:
-          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+          "hover:bg-slate-800 hover:text-slate-200 hover:shadow-[0_0_10px_-3px_rgba(255,255,255,0.05)] transition-all",
         destructive:
           "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
         link: "text-primary underline-offset-4 hover:underline",

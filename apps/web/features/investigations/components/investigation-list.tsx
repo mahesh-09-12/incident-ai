@@ -71,7 +71,7 @@ export function InvestigationList({ incidentId, hasEvidence }: { incidentId: str
         <button 
           onClick={() => refetch()}
           disabled={isFetching}
-          className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 disabled:opacity-50"
+          className="px-4 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-slate-200 border border-slate-700 hover:border-slate-600 hover:shadow-[0_0_15px_-3px_rgba(255,255,255,0.05)] rounded text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-slate-500 disabled:opacity-50"
         >
           {isFetching ? 'Retrying...' : 'Retry'}
         </button>
@@ -102,7 +102,7 @@ export function InvestigationList({ incidentId, hasEvidence }: { incidentId: str
             onClick={handleStartInvestigation}
             disabled={!hasEvidence || createMutation.isPending || hasRunning}
             aria-busy={createMutation.isPending}
-            className="w-full sm:w-auto px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex justify-center items-center cursor-pointer"
+            className="w-full sm:w-auto px-4 py-2 bg-indigo-600/20 text-indigo-300 hover:bg-indigo-500/30 neon-border shadow-[0_0_10px_-2px_rgba(99,102,241,0.3)] hover:shadow-[0_0_20px_-3px_rgba(99,102,241,0.6)] border border-indigo-500/50 rounded text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex justify-center items-center cursor-pointer"
           >
             {createMutation.isPending ? (
               <>
@@ -163,7 +163,7 @@ export function InvestigationList({ incidentId, hasEvidence }: { incidentId: str
                     {inv.status === 'COMPLETED' ? (
                       <Link 
                         href={`/incidents/${incidentId}/investigations/${inv.id}`}
-                        className="inline-flex items-center px-3 py-1.5 border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500"
+                        className="inline-flex items-center px-3 py-1.5 border border-slate-700 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-slate-200 hover:border-slate-600 hover:shadow-[0_0_15px_-3px_rgba(255,255,255,0.05)] rounded text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-slate-500"
                       >
                         View Report
                       </Link>
@@ -183,7 +183,7 @@ export function InvestigationList({ incidentId, hasEvidence }: { incidentId: str
             {investigations && investigations.length > 3 && !showAllInvestigations && (
               <button
                 onClick={() => setShowAllInvestigations(true)}
-                className="mt-3 text-sm text-slate-300 hover:text-slate-200 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 rounded px-4 py-2 cursor-pointer w-full text-center border border-dashed border-slate-700 hover:bg-slate-800 bg-slate-900/50"
+                className="mt-3 text-sm text-indigo-400 hover:text-indigo-300 font-medium transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded px-4 py-2 cursor-pointer w-full text-center border border-dashed border-indigo-500/30 hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:shadow-[0_0_15px_-3px_rgba(99,102,241,0.2)] bg-slate-900/50"
               >
                 See all investigations
               </button>

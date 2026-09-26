@@ -49,7 +49,7 @@ export function Dashboard() {
       {/* Page Header */}
       <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-100 tracking-tight">Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-100 tracking-tight drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]">Dashboard</h1>
           <p className="text-sm sm:text-base text-slate-400 mt-1">
             Overview of system incidents and investigation status.
           </p>
@@ -75,7 +75,7 @@ export function Dashboard() {
             {isStatsLoading ? (
               <Skeleton className="h-8 w-16 bg-slate-800" />
             ) : (
-              <div className="text-2xl font-bold text-slate-100">{stats?.total_incidents || 0}</div>
+              <div className="text-2xl font-bold text-slate-100 drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]">{stats?.total_incidents || 0}</div>
             )}
           </CardContent>
         </Card>
@@ -88,7 +88,7 @@ export function Dashboard() {
             {isStatsLoading ? (
               <Skeleton className="h-8 w-16 bg-slate-800" />
             ) : (
-              <div className="text-2xl font-bold text-slate-100">{stats?.open_incidents || 0}</div>
+              <div className="text-2xl font-bold text-slate-100 drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]">{stats?.open_incidents || 0}</div>
             )}
           </CardContent>
         </Card>
@@ -101,7 +101,7 @@ export function Dashboard() {
             {isStatsLoading ? (
               <Skeleton className="h-8 w-16 bg-slate-800" />
             ) : (
-              <div className="text-2xl font-bold text-indigo-400">{stats?.investigations_running || 0}</div>
+              <div className="text-2xl font-bold text-indigo-400 drop-shadow-[0_0_8px_rgba(99,102,241,0.4)]">{stats?.investigations_running || 0}</div>
             )}
           </CardContent>
         </Card>
@@ -114,7 +114,7 @@ export function Dashboard() {
             {isStatsLoading ? (
               <Skeleton className="h-8 w-16 bg-slate-800" />
             ) : (
-              <div className="text-2xl font-bold text-emerald-400">{stats?.investigations_completed || 0}</div>
+              <div className="text-2xl font-bold text-emerald-400 drop-shadow-[0_0_8px_rgba(16,185,129,0.4)]">{stats?.investigations_completed || 0}</div>
             )}
           </CardContent>
         </Card>
@@ -125,7 +125,7 @@ export function Dashboard() {
       {/* Recent Incidents */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg sm:text-xl font-semibold text-slate-100 tracking-tight">Recent Incidents</h2>
+          <h2 className="text-lg sm:text-xl font-semibold text-slate-100 tracking-tight drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]">Recent Incidents</h2>
           <Link 
             href="/incidents"
             className="text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors"

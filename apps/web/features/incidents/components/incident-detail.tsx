@@ -139,7 +139,7 @@ export function IncidentDetail({ incidentId }: { incidentId: string }) {
       <div className="space-y-6">
         {incidentBreadcrumb}
         <header className="border-b border-slate-800 pb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-100 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-100 tracking-tight drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]">
             Edit Incident
           </h1>
         </header>
@@ -168,7 +168,7 @@ export function IncidentDetail({ incidentId }: { incidentId: string }) {
       <header className="border-b border-slate-800 pb-6">
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-100 tracking-tight break-words">
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-100 tracking-tight break-words drop-shadow-[0_0_8px_rgba(255,255,255,0.15)]">
               {incident.title}
             </h1>
             <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">

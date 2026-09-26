@@ -57,7 +57,7 @@ export function IncidentList() {
           onClick={() => refetch()}
           disabled={isFetching}
           aria-busy={isFetching}
-          className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          className="px-4 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-slate-200 border border-slate-700 hover:border-slate-600 hover:shadow-[0_0_15px_-3px_rgba(255,255,255,0.05)] rounded text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {isFetching ? 'Retrying...' : 'Retry request'}
         </button>
@@ -81,7 +81,7 @@ export function IncidentList() {
           onClick={() => refetch()}
           disabled={isFetching}
           aria-busy={isFetching}
-          className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          className="px-4 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-slate-200 border border-slate-700 hover:border-slate-600 hover:shadow-[0_0_15px_-3px_rgba(255,255,255,0.05)] rounded text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {isFetching ? 'Retrying...' : 'Retry request'}
         </button>
@@ -99,7 +99,7 @@ export function IncidentList() {
         </p>
         <Link 
           href="/incidents/new"
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-950"
+          className="px-4 py-2 bg-indigo-600/20 text-indigo-300 hover:bg-indigo-500/30 neon-border shadow-[0_0_10px_-2px_rgba(99,102,241,0.3)] hover:shadow-[0_0_20px_-3px_rgba(99,102,241,0.6)] border border-indigo-500/50 rounded text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-950"
         >
           Create your first incident
         </Link>
