@@ -95,7 +95,7 @@ def analyze_evidence(state: InvestigationState) -> InvestigationState:
     )
 
     evidence_text = "\n\n".join(
-        f"--- {item['filename']} ---\n{item['content']}" 
+        f"--- Evidence ID: {item['id']} | Filename: {item['filename']} ---\n{item['content']}" 
         for item in state["evidence"]
     )
 
@@ -118,13 +118,21 @@ Evidence:
 Provide:
 
 - summary: A concise summary of what happened.
-- root_cause: The most likely technical root cause, including the
-  evidence supporting it. Clearly state uncertainty if the evidence
-  is insufficient.
-- recommendations: Practical actions to investigate, mitigate, and
-  prevent recurrence.
+- hypotheses: A list of 2 to 4 plausible technical hypotheses. Each hypothesis must have:
+  - id: A unique string identifier (e.g., "H1").
+  - hypothesis: The text of the technical hypothesis.
+  - reasoning: A brief explanation of why this hypothesis is considered.
+  - supporting_evidence: A list of evidence objects actually present that support this hypothesis. Each object MUST contain `evidence_id`, `filename`, and `explanation`.
+  - contradicting_evidence: A list of evidence objects actually present that contradict this hypothesis. Return an empty list if none. Each object MUST contain `evidence_id`, `filename`, and `explanation`.
+  - missing_evidence: A list of strings detailing missing information that would be useful for testing this hypothesis but is NOT currently available. Return an empty list if none.
+- root_cause: The most likely technical root cause among your hypotheses. Clearly state uncertainty if the evidence is insufficient. This should identify the currently most supported hypothesis, not pretend certainty.
+- supporting_evidence: Aggregate list of the most critical supporting evidence objects.
+- contradicting_evidence: Aggregate list of the most critical contradicting evidence objects.
+- missing_evidence: Aggregate list of missing information across all hypotheses.
+- recommendations: Practical actions to investigate, mitigate, and prevent recurrence.
 
-Do not invent facts that are not present in the provided information.
+Do not invent facts, logs, metrics, timestamps, deployments, traces, or evidence IDs that are not present in the provided information.
+If there is no supporting or contradicting evidence, return an empty list for those fields.
 """
 
     result = structured_llm.invoke(prompt)
@@ -132,11 +140,10 @@ Do not invent facts that are not present in the provided information.
     state["summary"] = result.summary
     state["root_cause"] = result.root_cause
     state["recommendations"] = result.recommendations
-    state["analysis"] = (
-        f"Summary: {result.summary}\n\n"
-        f"Root Cause: {result.root_cause}\n\n"
-        f"Recommendations: {result.recommendations}"
-    )
+    state["supporting_evidence"] = [e.model_dump() for e in result.supporting_evidence]
+    state["contradicting_evidence"] = [e.model_dump() for e in result.contradicting_evidence]
+    state["missing_evidence"] = result.missing_evidence
+    state["hypotheses"] = [h.model_dump() for h in result.hypotheses]
 
     return state
 
@@ -159,6 +166,10 @@ def save_result(
         summary=state["summary"] or "",
         root_cause=state["root_cause"] or "",
         recommendations=state["recommendations"] or "",
+        supporting_evidence=state["supporting_evidence"],
+        contradicting_evidence=state["contradicting_evidence"],
+        missing_evidence=state["missing_evidence"],
+        hypotheses=state["hypotheses"],
     )
 
     return state

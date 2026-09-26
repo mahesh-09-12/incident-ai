@@ -62,11 +62,19 @@ class InvestigationRepository:
         summary: str,
         root_cause: str,
         recommendations: str,
+        supporting_evidence: list[dict] | None = None,
+        contradicting_evidence: list[dict] | None = None,
+        missing_evidence: list[str] | None = None,
+        hypotheses: list[dict] | None = None,
     ) -> Investigation:
         investigation.status = "COMPLETED"
         investigation.summary = summary
         investigation.root_cause = root_cause
         investigation.recommendations = recommendations
+        investigation.supporting_evidence = supporting_evidence
+        investigation.contradicting_evidence = contradicting_evidence
+        investigation.missing_evidence = missing_evidence
+        investigation.hypotheses = hypotheses
         investigation.completed_at = datetime.now(timezone.utc)
 
         self.db.commit()

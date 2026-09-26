@@ -2,7 +2,7 @@ from datetime import datetime
 from uuid import uuid4
 
 from sqlalchemy import DateTime, ForeignKey, String, Text, func
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -41,6 +41,26 @@ class Investigation(Base):
 
     recommendations: Mapped[str | None] = mapped_column(
         Text,
+        nullable=True,
+    )
+
+    supporting_evidence: Mapped[list | None] = mapped_column(
+        JSONB,
+        nullable=True,
+    )
+
+    contradicting_evidence: Mapped[list | None] = mapped_column(
+        JSONB,
+        nullable=True,
+    )
+
+    missing_evidence: Mapped[list | None] = mapped_column(
+        JSONB,
+        nullable=True,
+    )
+
+    hypotheses: Mapped[list | None] = mapped_column(
+        JSONB,
         nullable=True,
     )
 

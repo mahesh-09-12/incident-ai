@@ -13,5 +13,9 @@ class InvestigationState(TypedDict):
     summary: str | None
     root_cause: str | None
     recommendations: str | None
+    supporting_evidence: list[dict] | None
+    contradicting_evidence: list[dict] | None
+    missing_evidence: list[str] | None
+    hypotheses: list[dict] | None
 
     error: str | None

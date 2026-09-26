@@ -25,6 +25,10 @@ class Settings(BaseSettings):
     # AI
     # =========================
     OPENAI_API_KEY: str = ""
+    OLLAMA_TIMEOUT_SECONDS: int = 240
+    
+    # Feature Flags
+    MULTI_AGENT_ENABLED: bool = False
 
     model_config = SettingsConfigDict(
         env_file=".env",
