@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getEvidenceList, uploadEvidence, deleteEvidence } from './api';
+import { getEvidenceList, uploadEvidence, deleteEvidence, getEvidenceContent } from './api';
 
 export const evidenceKeys = {
   all: ['evidence'] as const,
@@ -36,5 +36,14 @@ export function useDeleteEvidence() {
     onSuccess: (_, { incidentId }) => {
       queryClient.invalidateQueries({ queryKey: evidenceKeys.list(incidentId) });
     },
+  });
+}
+
+export function useEvidenceContent(incidentId: string, evidenceId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: ['evidence', incidentId, evidenceId, 'content'],
+    queryFn: () => getEvidenceContent(incidentId, evidenceId),
+    enabled,
+    staleTime: Infinity,
   });
 }

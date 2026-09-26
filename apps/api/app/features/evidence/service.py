@@ -97,6 +97,41 @@ class EvidenceService:
 
         return evidence
     
+    def get_evidence_file_path(self, incident_id: UUID, evidence_id: UUID) -> tuple[Path, str, str]:
+        incident = self.incident_repository.get_by_id(incident_id)
+
+        if not incident:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Incident not found",
+            )
+
+        evidence = self.evidence_repository.get_by_id(evidence_id)
+
+        if not evidence or evidence.incident_id != incident_id:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Evidence not found",
+            )
+
+        storage_path = Path(evidence.storage_path)
+
+        if not storage_path.exists() or not storage_path.is_file():
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Physical evidence file not found",
+            )
+            
+        try:
+            storage_path.resolve().relative_to(STORAGE_DIR.resolve())
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Invalid file path",
+            )
+
+        return storage_path, evidence.content_type, evidence.filename
+    
     def delete_evidence(self, evidence_id: UUID):
         evidence = self.evidence_repository.get_by_id(evidence_id)
 

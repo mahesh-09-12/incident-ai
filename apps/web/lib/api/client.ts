@@ -89,9 +89,64 @@ export async function fetchApi<T>(endpoint: string, options: FetchOptions = {}):
   }
 }
 
+export async function fetchApiText(endpoint: string, options: FetchOptions = {}): Promise<{ text: string, contentType: string }> {
+  const { params, ...customOptions } = options;
+  
+  const headers = new Headers(customOptions.headers);
+
+  const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const isServer = typeof window === 'undefined';
+  const baseUrl = isServer ? API_BASE_URL : '';
+  const url = baseUrl ? new URL(path, baseUrl) : new URL(path, window.location.origin);
+  
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        url.searchParams.append(key, value);
+      }
+    });
+  }
+
+  const response = await fetch(url.toString(), {
+    ...customOptions,
+    headers,
+  });
+
+  if (!response.ok) {
+    let errorMessage = response.statusText;
+    let errorData = null;
+
+    const text = await response.text();
+    if (text) {
+      try {
+        const data = JSON.parse(text);
+        errorData = data;
+        if (data && typeof data.detail === 'string') {
+          errorMessage = data.detail;
+        } else if (data && data.detail) {
+          errorMessage = JSON.stringify(data.detail);
+        } else if (data && data.message) {
+          errorMessage = data.message;
+        }
+      } catch {
+        errorMessage = text;
+      }
+    }
+
+    throw new ApiError(errorMessage, response.status, errorData);
+  }
+
+  const text = await response.text();
+  const contentType = response.headers.get('content-type') || 'application/octet-stream';
+  return { text, contentType };
+}
+
 export const apiClient = {
   get: <T>(endpoint: string, options?: Omit<FetchOptions, 'method'>) => 
     fetchApi<T>(endpoint, { ...options, method: 'GET' }),
+    
+  getText: (endpoint: string, options?: Omit<FetchOptions, 'method'>) => 
+    fetchApiText(endpoint, { ...options, method: 'GET' }),
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   post: <T>(endpoint: string, data?: any, options?: Omit<FetchOptions, 'method' | 'body'>) => {

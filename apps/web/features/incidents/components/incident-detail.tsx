@@ -114,7 +114,7 @@ export function IncidentDetail({ incidentId }: { incidentId: string }) {
         <BreadcrumbList className="flex-nowrap">
           <BreadcrumbItem className="whitespace-nowrap shrink-0">
             <BreadcrumbLink asChild>
-              <Link href="/">Home</Link>
+              <Link href="/dashboard">Dashboard</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator className="shrink-0" />
@@ -223,7 +223,7 @@ export function IncidentDetail({ incidentId }: { incidentId: string }) {
         </div>
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="flex flex-col gap-8">
         <section>
           <h2 className="text-lg font-medium text-slate-200 mb-3 border-b border-slate-800 pb-2">
             Evidence

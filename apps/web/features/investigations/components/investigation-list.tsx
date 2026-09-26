@@ -10,6 +10,7 @@ export function InvestigationList({ incidentId, hasEvidence }: { incidentId: str
   const createMutation = useCreateInvestigation();
   
   const [createError, setCreateError] = useState<string | null>(null);
+  const [showAllInvestigations, setShowAllInvestigations] = useState(false);
 
   const handleStartInvestigation = async () => {
     if (!hasEvidence || createMutation.isPending) return;
@@ -143,41 +144,51 @@ export function InvestigationList({ incidentId, hasEvidence }: { incidentId: str
             <p className="text-slate-500 text-sm">No investigations have been run yet.</p>
           </div>
         ) : (
-          <ul className="space-y-3">
-            {investigations?.map((inv) => (
-              <li key={inv.id} className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="text-sm font-medium text-slate-200 truncate">Run ID: {inv.id.substring(0, 8)}...</span>
-                    {renderStatusBadge(inv.status)}
+          <>
+            <ul className="space-y-3">
+              {(showAllInvestigations ? investigations : investigations?.slice(0, 3))?.map((inv) => (
+                <li key={inv.id} className="bg-slate-900/50 border border-slate-800 rounded-lg p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="text-sm font-medium text-slate-200 truncate">Run ID: {inv.id.substring(0, 8)}...</span>
+                      {renderStatusBadge(inv.status)}
+                    </div>
+                    <div className="mt-2 text-xs text-slate-500 flex flex-wrap gap-3">
+                      <span>Started: {new Date(inv.created_at).toLocaleString()}</span>
+                      {inv.completed_at && <span>Completed: {new Date(inv.completed_at).toLocaleString()}</span>}
+                    </div>
                   </div>
-                  <div className="mt-2 text-xs text-slate-500 flex flex-wrap gap-3">
-                    <span>Started: {new Date(inv.created_at).toLocaleString()}</span>
-                    {inv.completed_at && <span>Completed: {new Date(inv.completed_at).toLocaleString()}</span>}
+                  
+                  <div className="flex-shrink-0 flex items-center gap-3">
+                    {inv.status === 'COMPLETED' ? (
+                      <Link 
+                        href={`/incidents/${incidentId}/investigations/${inv.id}`}
+                        className="inline-flex items-center px-3 py-1.5 border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      >
+                        View Report
+                      </Link>
+                    ) : inv.status === 'FAILED' ? (
+                      <button
+                        onClick={handleStartInvestigation}
+                        disabled={createMutation.isPending || hasRunning}
+                        className="text-sm text-indigo-400 hover:text-indigo-300 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded px-2 py-1 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+                      >
+                        Retry
+                      </button>
+                    ) : null}
                   </div>
-                </div>
-                
-                <div className="flex-shrink-0 flex items-center gap-3">
-                  {inv.status === 'COMPLETED' ? (
-                    <Link 
-                      href={`/incidents/${incidentId}/investigations/${inv.id}`}
-                      className="inline-flex items-center px-3 py-1.5 border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500"
-                    >
-                      View Report
-                    </Link>
-                  ) : inv.status === 'FAILED' ? (
-                    <button
-                      onClick={handleStartInvestigation}
-                      disabled={createMutation.isPending || hasRunning}
-                      className="text-sm text-indigo-400 hover:text-indigo-300 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded px-2 py-1 disabled:opacity-50"
-                    >
-                      Retry
-                    </button>
-                  ) : null}
-                </div>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+            {investigations && investigations.length > 3 && !showAllInvestigations && (
+              <button
+                onClick={() => setShowAllInvestigations(true)}
+                className="mt-3 text-sm text-slate-300 hover:text-slate-200 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 rounded px-4 py-2 cursor-pointer w-full text-center border border-dashed border-slate-700 hover:bg-slate-800 bg-slate-900/50"
+              >
+                See all investigations
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>

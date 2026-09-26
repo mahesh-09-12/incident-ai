@@ -41,6 +41,7 @@ export function EvidenceList({ incidentId }: { incidentId: string }) {
   const [isUploading, setIsUploading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [showAllEvidence, setShowAllEvidence] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -223,7 +224,7 @@ export function EvidenceList({ incidentId }: { incidentId: string }) {
                 type="button"
                 onClick={clearSelectedFiles}
                 disabled={isUploading}
-                className="px-3 py-1.5 bg-transparent border border-slate-700 text-slate-300 rounded text-sm hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-500 disabled:opacity-50 transition-colors"
+                className="px-3 py-1.5 bg-transparent border border-slate-700 text-slate-300 rounded text-sm hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-500 disabled:opacity-50 transition-colors cursor-pointer"
               >
                 Clear Queue
               </button>
@@ -233,7 +234,7 @@ export function EvidenceList({ incidentId }: { incidentId: string }) {
               onClick={handleUpload}
               disabled={!hasPendingFiles || isUploading}
               aria-busy={isUploading}
-              className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
+              className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center cursor-pointer"
             >
               {isUploading ? (
                 <>
@@ -270,47 +271,57 @@ export function EvidenceList({ incidentId }: { incidentId: string }) {
             <p className="text-slate-500 text-sm">No evidence attached to this incident yet.</p>
           </div>
         ) : (
-          <ul className="space-y-3">
-            {evidenceList.map((evidence) => (
-              <li key={evidence.id} className="bg-slate-900/50 border border-slate-800 rounded p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-200 truncate" title={evidence.filename}>
-                    {evidence.filename}
-                  </p>
-                  <div className="mt-1 flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-slate-500">
-                    <span className="truncate">{evidence.content_type}</span>
-                    <span className="hidden sm:inline">&bull;</span>
-                    <span>{formatBytes(evidence.file_size)}</span>
-                    <span className="hidden sm:inline">&bull;</span>
-                    <span>{new Date(evidence.created_at).toLocaleString()}</span>
+          <>
+            <ul className="space-y-3">
+              {(showAllEvidence ? evidenceList : evidenceList.slice(0, 3)).map((evidence) => (
+                <li key={evidence.id} className="bg-slate-900/50 border border-slate-800 rounded p-3 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-200 truncate" title={evidence.filename}>
+                      {evidence.filename}
+                    </p>
+                    <div className="mt-1 flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-slate-500">
+                      <span className="truncate">{evidence.content_type}</span>
+                      <span className="hidden sm:inline">&bull;</span>
+                      <span>{formatBytes(evidence.file_size)}</span>
+                      <span className="hidden sm:inline">&bull;</span>
+                      <span>{new Date(evidence.created_at).toLocaleString()}</span>
+                    </div>
                   </div>
-                </div>
-                <div className="flex-shrink-0 flex justify-end">
-                  <AlertDialog>
-                    <AlertDialogTrigger
-                      disabled={deletingId === evidence.id}
-                      className="text-red-400 hover:text-red-300 hover:underline text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-500 rounded px-2 py-1 disabled:opacity-50 transition-colors cursor-pointer"
-                      aria-label={`Delete ${evidence.filename}`}
-                    >
-                      {deletingId === evidence.id ? 'Deleting...' : 'Delete'}
-                    </AlertDialogTrigger>
-                    <AlertDialogContent className="bg-slate-900 border-slate-800">
-                      <AlertDialogHeader>
-                        <AlertDialogTitle className="text-slate-100">Delete Evidence</AlertDialogTitle>
-                        <AlertDialogDescription className="text-slate-400">
-                          Are you sure you want to delete {evidence.filename}? This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel className="bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700 hover:text-white focus:ring-slate-500">Cancel</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(evidence.id)} className="bg-red-600 text-white hover:bg-red-700 focus:ring-red-500">Delete Evidence</AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
-              </li>
-            ))}
-          </ul>
+                  <div className="flex-shrink-0 flex justify-end">
+                    <AlertDialog>
+                      <AlertDialogTrigger
+                        disabled={deletingId === evidence.id}
+                        className="text-red-400 hover:text-red-300 hover:underline text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-500 rounded px-2 py-1 disabled:opacity-50 transition-colors cursor-pointer"
+                        aria-label={`Delete ${evidence.filename}`}
+                      >
+                        {deletingId === evidence.id ? 'Deleting...' : 'Delete'}
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="bg-slate-900 border-slate-800">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle className="text-slate-100">Delete Evidence</AlertDialogTitle>
+                          <AlertDialogDescription className="text-slate-400">
+                            Are you sure you want to delete {evidence.filename}? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="bg-slate-800 text-slate-200 border-slate-700 hover:bg-slate-700 hover:text-white focus:ring-slate-500">Cancel</AlertDialogCancel>
+                          <AlertDialogAction onClick={() => handleDelete(evidence.id)} className="bg-red-600 text-white hover:bg-red-700 focus:ring-red-500">Delete Evidence</AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            {evidenceList.length > 3 && !showAllEvidence && (
+              <button
+                onClick={() => setShowAllEvidence(true)}
+                className="mt-3 text-sm text-slate-300 hover:text-slate-200 font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 rounded px-4 py-2 cursor-pointer w-full text-center border border-dashed border-slate-700 hover:bg-slate-800 bg-slate-900/50"
+              >
+                See all evidences
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>

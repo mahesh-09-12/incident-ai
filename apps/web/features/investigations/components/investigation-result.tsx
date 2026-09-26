@@ -1,10 +1,11 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useInvestigation } from '../hooks';
-import { Investigation } from '../types';
+import { Investigation, EvidenceReference } from '../types';
 import { useIncident } from '@/features/incidents/hooks';
+import { EvidenceViewerDialog } from '@/features/evidence/components/evidence-viewer-dialog';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -17,10 +18,28 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
+import { FileText, FileX } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Separator } from "@/components/ui/separator";
 
 export function InvestigationResult({ incidentId, investigationId }: { incidentId: string; investigationId: string }) {
   const { data: investigation, isLoading, isError, error, refetch } = useInvestigation(incidentId, investigationId);
   const { data: incident } = useIncident(incidentId);
+
+  const [selectedEvidence, setSelectedEvidence] = useState<{ id: string; filename: string } | null>(null);
+
+  const handleEvidenceClick = (id: string, filename: string) => {
+    setSelectedEvidence({ id, filename });
+  };
+
+  const handleCloseDialog = (open: boolean) => {
+    if (!open) setSelectedEvidence(null);
+  };
 
   if (isLoading) {
     return (
@@ -54,7 +73,7 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
         <p className="text-red-400/80 mb-6 text-sm max-w-md">{errorMessage}</p>
         <button 
           onClick={() => refetch()}
-          className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500"
+          className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 cursor-pointer"
         >
           Retry
         </button>
@@ -92,6 +111,52 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
     }
   };
 
+  const renderEvidenceList = (evidenceList: EvidenceReference[] | null | undefined, emptyMessage: string) => {
+    if (!evidenceList || evidenceList.length === 0) {
+      return <p className="text-slate-400 italic text-sm">{emptyMessage}</p>;
+    }
+    return (
+      <ul className="space-y-4">
+        {evidenceList.map((item, idx) => (
+          <li key={idx} className="bg-slate-950 border border-slate-800 rounded-md p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <FileText className="w-4 h-4 text-indigo-400" />
+              <button
+                onClick={() => handleEvidenceClick(item.evidence_id, item.filename)}
+                className="text-sm font-medium text-blue-400 hover:underline hover:text-blue-300 text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 rounded px-1 -mx-1"
+                aria-label={`View evidence ${item.filename}`}
+              >
+                {item.filename || 'Unknown File'}
+              </button>
+              <span className="text-xs text-slate-500 font-mono ml-2 hidden sm:inline-block truncate">
+                {item.evidence_id}
+              </span>
+            </div>
+            <div className="text-sm text-slate-300 leading-relaxed pl-6">
+              {item.explanation}
+            </div>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
+  const renderMissingEvidence = (missingEvidenceList: string[] | null | undefined, emptyMessage: string) => {
+    if (!missingEvidenceList || missingEvidenceList.length === 0) {
+      return <p className="text-slate-400 italic text-sm">{emptyMessage}</p>;
+    }
+    return (
+      <ul className="space-y-3">
+        {missingEvidenceList.map((item, idx) => (
+          <li key={idx} className="flex gap-3 bg-slate-950 border border-slate-800 rounded-md p-4">
+            <FileX className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+            <span className="text-sm text-slate-300 leading-relaxed">{item}</span>
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
   const incidentTitle = incident?.title || 'Loading...';
 
   const investigationBreadcrumb = (
@@ -100,7 +165,7 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
         <BreadcrumbList className="flex-nowrap">
           <BreadcrumbItem className="whitespace-nowrap shrink-0">
             <BreadcrumbLink asChild>
-              <Link href="/">Home</Link>
+              <Link href="/dashboard">Dashboard</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator className="shrink-0" />
@@ -203,7 +268,7 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
 
           <Card className="bg-slate-900 border-slate-800">
             <CardHeader>
-              <CardTitle className="text-lg text-slate-200">Root Cause</CardTitle>
+              <CardTitle className="text-lg text-slate-200">Most Supported Hypothesis</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="whitespace-pre-wrap text-sm text-slate-300 leading-relaxed break-words">
@@ -211,6 +276,97 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
               </div>
             </CardContent>
           </Card>
+
+          {investigation.hypotheses && investigation.hypotheses.length > 0 ? (
+            <Card className="bg-slate-900 border-slate-800">
+              <CardHeader>
+                <CardTitle className="text-lg text-slate-200">Investigation Hypotheses</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Accordion className="w-full space-y-4">
+                  {investigation.hypotheses.map((hyp, index) => {
+                    const isRootCauseMatch = investigation.root_cause?.includes(hyp.id) || investigation.root_cause?.includes(hyp.hypothesis);
+                    
+                    return (
+                      <AccordionItem key={hyp.id || index} value={`hyp-${index}`} className="border border-slate-800 rounded-lg bg-slate-900 overflow-hidden px-4">
+                        <AccordionTrigger className="hover:no-underline py-4 text-left">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 w-full pr-4">
+                            <span className="font-semibold text-slate-200 text-sm sm:text-base">
+                              {hyp.id}: {hyp.hypothesis}
+                            </span>
+                            {isRootCauseMatch && (
+                              <Badge className="w-fit bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shrink-0">
+                                Most Supported
+                              </Badge>
+                            )}
+                          </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-2 pb-6 space-y-6">
+                          <div>
+                            <h4 className="text-sm font-semibold text-slate-300 mb-2">Reasoning</h4>
+                            <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-wrap break-words bg-slate-950 p-4 rounded-md border border-slate-800">
+                              {hyp.reasoning || 'No reasoning provided.'}
+                            </p>
+                          </div>
+
+                          <Separator className="bg-slate-800" />
+                          
+                          <div>
+                            <h4 className="text-sm font-semibold text-slate-300 mb-3">Supporting Evidence</h4>
+                            {renderEvidenceList(hyp.supporting_evidence, "No supporting evidence provided for this hypothesis.")}
+                          </div>
+
+                          <Separator className="bg-slate-800" />
+                          
+                          <div>
+                            <h4 className="text-sm font-semibold text-slate-300 mb-3">Contradicting Evidence</h4>
+                            {renderEvidenceList(hyp.contradicting_evidence, "No contradicting evidence found for this hypothesis.")}
+                          </div>
+
+                          <Separator className="bg-slate-800" />
+                          
+                          <div>
+                            <h4 className="text-sm font-semibold text-slate-300 mb-3">Missing Evidence</h4>
+                            {renderMissingEvidence(hyp.missing_evidence, "No missing evidence identified for this hypothesis.")}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    );
+                  })}
+                </Accordion>
+              </CardContent>
+            </Card>
+          ) : (
+            // Backward compatibility for legacy investigations
+            <>
+              <Card className="bg-slate-900 border-slate-800">
+                <CardHeader>
+                  <CardTitle className="text-lg text-slate-200">Supporting Evidence</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {renderEvidenceList(investigation.supporting_evidence, "No supporting evidence provided.")}
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-slate-900 border-slate-800">
+                <CardHeader>
+                  <CardTitle className="text-lg text-slate-200">Contradicting Evidence</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {renderEvidenceList(investigation.contradicting_evidence, "No contradicting evidence found.")}
+                </CardContent>
+              </Card>
+
+              <Card className="bg-slate-900 border-slate-800">
+                <CardHeader>
+                  <CardTitle className="text-lg text-slate-200">Missing Evidence / What to Investigate Next</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {renderMissingEvidence(investigation.missing_evidence, "No missing evidence identified.")}
+                </CardContent>
+              </Card>
+            </>
+          )}
 
           <Card className="bg-slate-900 border-slate-800">
             <CardHeader>
@@ -224,6 +380,14 @@ export function InvestigationResult({ incidentId, investigationId }: { incidentI
           </Card>
         </div>
       )}
+
+      <EvidenceViewerDialog
+        incidentId={incidentId}
+        evidenceId={selectedEvidence?.id || null}
+        filename={selectedEvidence?.filename || null}
+        isOpen={!!selectedEvidence}
+        onOpenChange={handleCloseDialog}
+      />
     </div>
   );
 }

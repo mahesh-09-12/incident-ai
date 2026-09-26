@@ -8,6 +8,7 @@ from fastapi import (
     UploadFile,
     status,
 )
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
@@ -60,6 +61,25 @@ def get_evidence(
     service = EvidenceService(db)
 
     return service.get_evidence(evidence_id)
+
+@router.get(
+    "/{evidence_id}/content",
+    response_class=FileResponse,
+)
+def get_evidence_content(
+    incident_id: UUID,
+    evidence_id: UUID,
+    db: Session = Depends(get_db),
+):
+    service = EvidenceService(db)
+    path, content_type, filename = service.get_evidence_file_path(incident_id, evidence_id)
+
+    return FileResponse(
+        path=path,
+        media_type=content_type,
+        filename=filename,
+        content_disposition_type="inline"
+    )
 
 @router.delete(
     "/{evidence_id}",
