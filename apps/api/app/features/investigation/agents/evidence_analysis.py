@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
-from app.features.investigation.agents.llm_wrapper import BoundedChatOllama
+from app.features.investigation.agents.llm_wrapper import get_llm
 
 from app.features.investigation.multi_agent_contracts import (
     MultiAgentInvestigationState,
@@ -55,7 +55,7 @@ def analyze_evidence_node(state: MultiAgentInvestigationState) -> dict:
     valid_evidence_ids = {str(e.get("id")) for e in evidence_payload if "id" in e}
     valid_timeline_ids = {t.line_number for t in state.get("timeline", [])}
 
-    llm = BoundedChatOllama(model="qwen3:4b", temperature=0)
+    llm = get_llm(temperature=0)
     structured_llm = llm.with_structured_output(EvidenceAnalysisResult)
 
     prompt = ChatPromptTemplate.from_messages([

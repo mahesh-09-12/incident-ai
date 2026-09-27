@@ -1,7 +1,7 @@
 import uuid
 from pydantic import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
-from app.features.investigation.agents.llm_wrapper import BoundedChatOllama
+from app.features.investigation.agents.llm_wrapper import get_llm
 
 from app.features.investigation.multi_agent_contracts import (
     MultiAgentInvestigationState,
@@ -75,7 +75,7 @@ def investigate_hypotheses_node(state: MultiAgentInvestigationState) -> dict:
     evidence_id_to_filename = {str(e.get("id")): e.get("filename", "unknown") for e in evidence_payload if "id" in e}
     valid_evidence_ids = set(evidence_id_to_filename.keys())
 
-    llm = BoundedChatOllama(model="qwen3:4b", temperature=0)
+    llm = get_llm(temperature=0)
     structured_llm = llm.with_structured_output(InvestigateHypothesesResult)
 
     prompt = ChatPromptTemplate.from_messages([

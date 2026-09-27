@@ -41,7 +41,7 @@ def base_state() -> MultiAgentInvestigationState:
 
 
 @patch("app.features.investigation.agents.evidence_analysis.ChatPromptTemplate")
-@patch("app.features.investigation.agents.evidence_analysis.BoundedChatOllama")
+@patch("app.features.investigation.agents.evidence_analysis.get_llm")
 def test_valid_structured_observations(mock_ollama, mock_prompt, base_state):
     mock_chain = MagicMock()
     # When chain.invoke is called, return our mock EvidenceAnalysisResult
@@ -75,7 +75,7 @@ def test_valid_structured_observations(mock_ollama, mock_prompt, base_state):
 
 
 @patch("app.features.investigation.agents.evidence_analysis.ChatPromptTemplate")
-@patch("app.features.investigation.agents.evidence_analysis.BoundedChatOllama")
+@patch("app.features.investigation.agents.evidence_analysis.get_llm")
 def test_invalid_evidence_id(mock_ollama, mock_prompt, base_state):
     mock_chain = MagicMock()
     mock_chain.invoke.return_value = EvidenceAnalysisResult(
@@ -93,7 +93,7 @@ def test_invalid_evidence_id(mock_ollama, mock_prompt, base_state):
 
 
 @patch("app.features.investigation.agents.evidence_analysis.ChatPromptTemplate")
-@patch("app.features.investigation.agents.evidence_analysis.BoundedChatOllama")
+@patch("app.features.investigation.agents.evidence_analysis.get_llm")
 def test_invalid_timeline_id(mock_ollama, mock_prompt, base_state):
     mock_chain = MagicMock()
     mock_chain.invoke.return_value = EvidenceAnalysisResult(
@@ -120,7 +120,7 @@ def test_empty_evidence():
 
 
 @patch("app.features.investigation.agents.evidence_analysis.ChatPromptTemplate")
-@patch("app.features.investigation.agents.evidence_analysis.BoundedChatOllama")
+@patch("app.features.investigation.agents.evidence_analysis.get_llm")
 def test_malformed_observation_structure(mock_ollama, mock_prompt, base_state):
     mock_chain = MagicMock()
     # Simulate a parsing exception from Langchain

@@ -36,7 +36,7 @@ def base_state() -> MultiAgentInvestigationState:
     }
 
 @patch("app.features.investigation.agents.investigate_hypotheses.ChatPromptTemplate")
-@patch("app.features.investigation.agents.investigate_hypotheses.BoundedChatOllama")
+@patch("app.features.investigation.agents.investigate_hypotheses.get_llm")
 def test_valid_investigation(mock_ollama, mock_prompt, base_state):
     mock_chain = MagicMock()
     mock_chain.invoke.return_value = InvestigateHypothesesResult(
@@ -78,7 +78,7 @@ def test_valid_investigation(mock_ollama, mock_prompt, base_state):
     assert "timeline" not in call_args
 
 @patch("app.features.investigation.agents.investigate_hypotheses.ChatPromptTemplate")
-@patch("app.features.investigation.agents.investigate_hypotheses.BoundedChatOllama")
+@patch("app.features.investigation.agents.investigate_hypotheses.get_llm")
 def test_invalid_evidence_reference(mock_ollama, mock_prompt, base_state):
     mock_chain = MagicMock()
     mock_chain.invoke.return_value = InvestigateHypothesesResult(
@@ -107,7 +107,7 @@ def test_invalid_evidence_reference(mock_ollama, mock_prompt, base_state):
     assert any("hallucinated evidence_id" in warn for warn in result["warnings"])
 
 @patch("app.features.investigation.agents.investigate_hypotheses.ChatPromptTemplate")
-@patch("app.features.investigation.agents.investigate_hypotheses.BoundedChatOllama")
+@patch("app.features.investigation.agents.investigate_hypotheses.get_llm")
 def test_partial_invalid_evidence_reference(mock_ollama, mock_prompt, base_state):
     mock_chain = MagicMock()
     mock_chain.invoke.return_value = InvestigateHypothesesResult(
@@ -149,7 +149,7 @@ def test_empty_observations():
     assert result["errors"] == ["Cannot generate hypotheses: No observations provided."]
 
 @patch("app.features.investigation.agents.investigate_hypotheses.ChatPromptTemplate")
-@patch("app.features.investigation.agents.investigate_hypotheses.BoundedChatOllama")
+@patch("app.features.investigation.agents.investigate_hypotheses.get_llm")
 def test_deterministic_downgrade_missing_evidence(mock_ollama, mock_prompt, base_state):
     """
     Ensures that an unverified deployment misconfiguration (or any missing evidence)
@@ -184,7 +184,7 @@ def test_deterministic_downgrade_missing_evidence(mock_ollama, mock_prompt, base
     assert "Deterministically downgraded" in finding.uncertainty_rationale
 
 @patch("app.features.investigation.agents.investigate_hypotheses.ChatPromptTemplate")
-@patch("app.features.investigation.agents.investigate_hypotheses.BoundedChatOllama")
+@patch("app.features.investigation.agents.investigate_hypotheses.get_llm")
 def test_hallucinated_evidence_format(mock_ollama, mock_prompt, base_state):
     """
     Ensures that if the LLM returns descriptive strings instead of IDs,

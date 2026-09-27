@@ -12,7 +12,7 @@ from app.features.investigation.repository import InvestigationRepository
 
 from app.features.evidence.repository import EvidenceRepository
 
-from langchain_ollama import ChatOllama
+from app.features.investigation.agents.llm_wrapper import get_llm
 
 @dataclass
 class InvestigationContext:
@@ -85,10 +85,7 @@ def load_evidence(
 
 
 def analyze_evidence(state: InvestigationState) -> InvestigationState:
-    llm = ChatOllama(
-        model="qwen3:4b",
-        temperature=0,
-    )
+    llm = get_llm(temperature=0)
 
     structured_llm = llm.with_structured_output(
         InvestigationAIResult

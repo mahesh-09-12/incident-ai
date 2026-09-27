@@ -26,9 +26,12 @@ class Settings(BaseSettings):
     # =========================
     OPENAI_API_KEY: str = ""
     OLLAMA_TIMEOUT_SECONDS: int = 240
+    AI_PROVIDER: str = "gemini"  # "ollama" or "gemini"
+    GEMINI_API_KEY: str = ""
+    GEMINI_MODEL: str = "gemini-3.8-flash"
     
     # Feature Flags
-    MULTI_AGENT_ENABLED: bool = False
+    MULTI_AGENT_ENABLED: bool = True
 
     model_config = SettingsConfigDict(
         env_file=".env",
