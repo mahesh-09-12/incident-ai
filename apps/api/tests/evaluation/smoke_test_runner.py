@@ -53,7 +53,7 @@ def run_smoke_test():
         
         # Run it synchronously
         print("[TEST] Starting Multi-Agent Execution...")
-        InvestigationService.run_investigation_background(investigation.id, target_incident.id)
+        InvestigationService.run_investigation_background(investigation.id, target_incident.id, 'user123')
         
         execution_time = time.time() - start_time
         print(f"[TEST] Execution Completed in {execution_time:.2f} seconds.")

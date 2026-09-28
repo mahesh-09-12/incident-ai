@@ -10,5 +10,5 @@ export const getInvestigation = async (incidentId: string, investigationId: stri
 };
 
 export const createInvestigation = async (incidentId: string): Promise<Investigation> => {
-  return apiClient.post<Investigation>(`api/v1/incidents/${incidentId}/investigations`);
+  return apiClient.post<Investigation>(`api/v1/incidents/${incidentId}/investigations`, {});
 };

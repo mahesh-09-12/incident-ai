@@ -51,7 +51,7 @@ def test_investigation_service_handles_timeout(mock_invoke):
     mock_investigation.status = "RUNNING"
     mock_repo.get_by_id.return_value = mock_investigation
     
-    service = InvestigationService(db=mock_db)
+    service = InvestigationService(db=mock_db, owner_id="user123")
     
     # Need to patch the repo inside run_investigation_background
     with patch("app.features.investigation.service.InvestigationRepository", return_value=mock_repo):
@@ -62,6 +62,6 @@ def test_investigation_service_handles_timeout(mock_invoke):
                 # Simulate a TimeoutError bubbling up from the multi-agent execution
                 mock_invoke.side_effect = TimeoutError("LLM execution exceeded 240 seconds configured timeout")
                 
-                InvestigationService.run_investigation_background(mock_investigation.id, mock_investigation.incident_id)
+                InvestigationService.run_investigation_background(mock_investigation.id, mock_investigation.incident_id, 'user123')
                 
                 mock_repo.mark_failed.assert_called_once_with(mock_investigation)

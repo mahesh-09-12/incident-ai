@@ -17,6 +17,11 @@ class Incident(Base):
         default=uuid4,
     )
 
+    owner_id: Mapped[str] = mapped_column(
+        String(255),
+        nullable=False,
+    )
+
     title: Mapped[str] = mapped_column(
         String(255),
         nullable=False,

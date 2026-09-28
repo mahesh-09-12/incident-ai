@@ -6,6 +6,8 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "alembic>=1.18.5",
+    "clerk-backend-api>=7.0.0",
+    "cloudinary>=1.46.2",
     "fastapi>=0.140.0",
     "google-genai>=2.25.0",
     "langchain>=1.4.0",

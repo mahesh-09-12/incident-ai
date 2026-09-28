@@ -14,6 +14,12 @@ export class ApiError extends Error {
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
 
+let getTokenResolver: (() => Promise<string | null>) | null = null;
+
+export const setAuthTokenResolver = (resolver: () => Promise<string | null>) => {
+  getTokenResolver = resolver;
+};
+
 export interface FetchOptions extends RequestInit {
   params?: Record<string, string>;
 }
@@ -24,6 +30,23 @@ export async function fetchApi<T>(endpoint: string, options: FetchOptions = {}):
   const headers = new Headers(customOptions.headers);
   if (!headers.has('Content-Type') && customOptions.body && typeof customOptions.body === 'string') {
     headers.set('Content-Type', 'application/json');
+  }
+
+  try {
+    const isServer = typeof window === 'undefined';
+    let token = null;
+    if (isServer) {
+      const { auth } = await import('@clerk/nextjs/server');
+      const authObj = await auth();
+      token = await authObj.getToken();
+    } else if (getTokenResolver) {
+      token = await getTokenResolver();
+    }
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+  } catch (e) {
+    console.warn('Failed to get auth token', e);
   }
 
   // Construct URL, ensuring endpoint is formatted correctly
@@ -93,6 +116,23 @@ export async function fetchApiText(endpoint: string, options: FetchOptions = {})
   const { params, ...customOptions } = options;
   
   const headers = new Headers(customOptions.headers);
+
+  try {
+    const isServer = typeof window === 'undefined';
+    let token = null;
+    if (isServer) {
+      const { auth } = await import('@clerk/nextjs/server');
+      const authObj = await auth();
+      token = await authObj.getToken();
+    } else if (getTokenResolver) {
+      token = await getTokenResolver();
+    }
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+  } catch (e) {
+    console.warn('Failed to get auth token', e);
+  }
 
   const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
   const isServer = typeof window === 'undefined';

@@ -8,8 +8,8 @@ from app.features.incident.schema import IncidentCreate, IncidentUpdate
 
 
 class IncidentService:
-    def __init__(self, db: Session):
-        self.repository = IncidentRepository(db)
+    def __init__(self, db: Session, owner_id: str):
+        self.repository = IncidentRepository(db, owner_id)
 
     def create_incident(self, incident: IncidentCreate):
         return self.repository.create(incident)

@@ -37,9 +37,29 @@ class Evidence(Base):
         nullable=False,
     )
 
-    storage_path: Mapped[str] = mapped_column(
+    storage_path: Mapped[str | None] = mapped_column(
         String(500),
-        nullable=False,
+        nullable=True,
+    )
+
+    cloudinary_public_id: Mapped[str | None] = mapped_column(
+        String(500),
+        nullable=True,
+    )
+
+    cloudinary_asset_id: Mapped[str | None] = mapped_column(
+        String(255),
+        nullable=True,
+    )
+
+    cloudinary_resource_type: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
+    )
+
+    cloudinary_delivery_type: Mapped[str | None] = mapped_column(
+        String(50),
+        nullable=True,
     )
 
     created_at: Mapped[datetime] = mapped_column(

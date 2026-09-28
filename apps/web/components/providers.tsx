@@ -1,7 +1,26 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "@clerk/nextjs";
+import { setAuthTokenResolver } from "@/lib/api/client";
+
+function AuthInterceptor() {
+  const { getToken } = useAuth();
+  
+  useEffect(() => {
+    setAuthTokenResolver(async () => {
+      try {
+        return await getToken();
+      } catch (e) {
+        console.error("Failed to get Clerk token", e);
+        return null;
+      }
+    });
+  }, [getToken]);
+
+  return null;
+}
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -18,6 +37,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthInterceptor />
+      {children}
+    </QueryClientProvider>
   );
 }

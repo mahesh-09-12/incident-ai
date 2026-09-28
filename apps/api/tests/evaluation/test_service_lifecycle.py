@@ -41,7 +41,7 @@ def test_session_lifecycle_multi_agent(mock_graph, mock_ev_repo, mock_inc_repo, 
             "summary": '{"summary": "test", "root_cause": "test", "recommendations": "test", "supporting_evidence": [], "contradicting_evidence": [], "missing_evidence": [], "hypotheses": []}'
         }
         
-        InvestigationService.run_investigation_background(investigation_id, incident_id)
+        InvestigationService.run_investigation_background(investigation_id, incident_id, 'user123')
         
         # Verify db_1 (read transaction) was closed before the graph was invoked
         mock_db_1.close.assert_called_once()
@@ -95,7 +95,7 @@ def test_persistence_failure_rollback(mock_graph, mock_ev_repo, mock_inc_repo, m
             "summary": '{"summary": "test", "root_cause": "test", "recommendations": "test", "supporting_evidence": [], "contradicting_evidence": [], "missing_evidence": [], "hypotheses": []}'
         }
         
-        InvestigationService.run_investigation_background(investigation_id, incident_id)
+        InvestigationService.run_investigation_background(investigation_id, incident_id, 'user123')
         
         # db_2 should be rolled back and closed
         mock_db_2.rollback.assert_called_once()

@@ -8,9 +8,9 @@ from fastapi import (
     UploadFile,
     status,
 )
-from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
+from app.core.auth import get_current_user_id
 from app.db.session import get_db
 from app.features.evidence.schema import EvidenceResponse
 from app.features.evidence.service import EvidenceService
@@ -30,8 +30,9 @@ async def upload_evidence(
     incident_id: UUID,
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
+    owner_id: str = Depends(get_current_user_id),
 ):
-    service = EvidenceService(db)
+    service = EvidenceService(db, owner_id)
 
     return await service.upload_evidence(
         incident_id=incident_id,
@@ -45,8 +46,9 @@ async def upload_evidence(
 def list_evidence(
     incident_id: UUID,
     db: Session = Depends(get_db),
+    owner_id: str = Depends(get_current_user_id),
 ):
-    service = EvidenceService(db)
+    service = EvidenceService(db, owner_id)
 
     return service.list_evidence(incident_id)
 
@@ -57,29 +59,24 @@ def list_evidence(
 def get_evidence(
     evidence_id: UUID,
     db: Session = Depends(get_db),
+    owner_id: str = Depends(get_current_user_id),
 ):
-    service = EvidenceService(db)
+    service = EvidenceService(db, owner_id)
 
     return service.get_evidence(evidence_id)
 
 @router.get(
     "/{evidence_id}/content",
-    response_class=FileResponse,
+    response_class=Response,
 )
 def get_evidence_content(
     incident_id: UUID,
     evidence_id: UUID,
     db: Session = Depends(get_db),
+    owner_id: str = Depends(get_current_user_id),
 ):
-    service = EvidenceService(db)
-    path, content_type, filename = service.get_evidence_file_path(incident_id, evidence_id)
-
-    return FileResponse(
-        path=path,
-        media_type=content_type,
-        filename=filename,
-        content_disposition_type="inline"
-    )
+    service = EvidenceService(db, owner_id)
+    return service.get_evidence_content_response(incident_id, evidence_id)
 
 @router.delete(
     "/{evidence_id}",
@@ -88,8 +85,9 @@ def get_evidence_content(
 def delete_evidence(
     evidence_id: UUID,
     db: Session = Depends(get_db),
+    owner_id: str = Depends(get_current_user_id),
 ):
-    service = EvidenceService(db)
+    service = EvidenceService(db, owner_id)
 
     service.delete_evidence(evidence_id)
 

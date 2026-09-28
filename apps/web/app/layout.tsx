@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter, Geist_Mono } from "next/font/google";
 import { AppShell } from "@/components/layout/app-shell";
 import { Providers } from "@/components/providers";
+import { ClerkProvider } from '@clerk/nextjs'
+import { dark } from '@clerk/themes'
 import "./globals.css";
 
 const inter = Inter({
@@ -30,9 +32,11 @@ export default function RootLayout({
       className={`${inter.variable} ${geistMono.variable} h-full antialiased dark`}
     >
       <body className="min-h-full flex flex-col bg-slate-950 text-slate-100 font-sans">
-        <Providers>
-          <AppShell>{children}</AppShell>
-        </Providers>
+        <ClerkProvider appearance={{ theme: dark }}>
+          <Providers>
+            <AppShell>{children}</AppShell>
+          </Providers>
+        </ClerkProvider>
       </body>
     </html>
   );

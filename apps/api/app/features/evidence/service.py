@@ -1,11 +1,15 @@
 from pathlib import Path
 from uuid import UUID, uuid4
 
-from fastapi import HTTPException, UploadFile, status
+from fastapi import HTTPException, UploadFile, status, Response
 from sqlalchemy.orm import Session
+import cloudinary.uploader
+import cloudinary.api
 
+from app.core.config import settings
 from app.features.evidence.repository import EvidenceRepository
 from app.features.incident.repository import IncidentRepository
+from app.features.evidence.storage import get_evidence_content_bytes
 
 
 STORAGE_DIR = Path("storage/evidence")
@@ -21,9 +25,9 @@ ALLOWED_CONTENT_TYPES = {
 
 
 class EvidenceService:
-    def __init__(self, db: Session):
+    def __init__(self, db: Session, owner_id: str):
         self.evidence_repository = EvidenceRepository(db)
-        self.incident_repository = IncidentRepository(db)
+        self.incident_repository = IncidentRepository(db, owner_id)
 
     async def upload_evidence(
         self,
@@ -58,20 +62,49 @@ class EvidenceService:
                 detail="File cannot be empty",
             )
 
-        STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+        if settings.is_cloudinary_enabled:
+            # Upload to Cloudinary
+            public_id = f"incident_ai/incidents/{incident_id}/evidence/{uuid4()}"
+            
+            try:
+                cloudinary_res = cloudinary.uploader.upload(
+                    file_content,
+                    public_id=public_id,
+                    resource_type="raw",
+                    type="authenticated",
+                    overwrite=True
+                )
+            except Exception as e:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"Failed to upload evidence to Cloudinary: {e}"
+                )
+                
+            evidence = self.evidence_repository.create(
+                incident_id=incident_id,
+                filename=file.filename,
+                content_type=file.content_type or "application/octet-stream",
+                file_size=len(file_content),
+                storage_path=None,
+                cloudinary_public_id=cloudinary_res.get("public_id"),
+                cloudinary_asset_id=cloudinary_res.get("asset_id"),
+                cloudinary_resource_type=cloudinary_res.get("resource_type"),
+                cloudinary_delivery_type=cloudinary_res.get("type"),
+            )
+        else:
+            # Local Storage
+            STORAGE_DIR.mkdir(parents=True, exist_ok=True)
+            stored_filename = f"{uuid4()}_{file.filename}"
+            storage_path = STORAGE_DIR / stored_filename
+            storage_path.write_bytes(file_content)
 
-        stored_filename = f"{uuid4()}_{file.filename}"
-        storage_path = STORAGE_DIR / stored_filename
-
-        storage_path.write_bytes(file_content)
-
-        evidence = self.evidence_repository.create(
-            incident_id=incident_id,
-            filename=file.filename,
-            content_type=file.content_type or "application/octet-stream",
-            file_size=len(file_content),
-            storage_path=str(storage_path),
-        )
+            evidence = self.evidence_repository.create(
+                incident_id=incident_id,
+                filename=file.filename,
+                content_type=file.content_type or "application/octet-stream",
+                file_size=len(file_content),
+                storage_path=str(storage_path),
+            )
 
         return evidence
     
@@ -94,10 +127,17 @@ class EvidenceService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Evidence not found",
             )
+            
+        incident = self.incident_repository.get_by_id(evidence.incident_id)
+        if not incident:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Evidence not found",
+            )
 
         return evidence
     
-    def get_evidence_file_path(self, incident_id: UUID, evidence_id: UUID) -> tuple[Path, str, str]:
+    def get_evidence_content_response(self, incident_id: UUID, evidence_id: UUID) -> Response:
         incident = self.incident_repository.get_by_id(incident_id)
 
         if not incident:
@@ -114,23 +154,13 @@ class EvidenceService:
                 detail="Evidence not found",
             )
 
-        storage_path = Path(evidence.storage_path)
+        content_bytes = get_evidence_content_bytes(evidence)
 
-        if not storage_path.exists() or not storage_path.is_file():
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Physical evidence file not found",
-            )
-            
-        try:
-            storage_path.resolve().relative_to(STORAGE_DIR.resolve())
-        except ValueError:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Invalid file path",
-            )
-
-        return storage_path, evidence.content_type, evidence.filename
+        return Response(
+            content=content_bytes,
+            media_type=evidence.content_type,
+            headers={"Content-Disposition": f'inline; filename="{evidence.filename}"'}
+        )
     
     def delete_evidence(self, evidence_id: UUID):
         evidence = self.evidence_repository.get_by_id(evidence_id)
@@ -140,10 +170,32 @@ class EvidenceService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Evidence not found",
             )
+            
+        incident = self.incident_repository.get_by_id(evidence.incident_id)
+        if not incident:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Evidence not found",
+            )
 
-        storage_path = Path(evidence.storage_path)
-
-        if storage_path.exists():
-            storage_path.unlink()
+        if evidence.cloudinary_public_id:
+            try:
+                cloudinary.uploader.destroy(
+                    evidence.cloudinary_public_id,
+                    resource_type=evidence.cloudinary_resource_type or "raw",
+                    type=evidence.cloudinary_delivery_type or "authenticated",
+                    invalidate=True
+                )
+            except Exception as e:
+                # If Cloudinary deletion fails, do not silently delete the database record
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail=f"Failed to delete evidence from Cloudinary: {e}"
+                )
+                
+        if evidence.storage_path:
+            storage_path = Path(evidence.storage_path)
+            if storage_path.exists():
+                storage_path.unlink()
 
         self.evidence_repository.delete(evidence)

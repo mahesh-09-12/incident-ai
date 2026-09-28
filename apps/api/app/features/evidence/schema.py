@@ -12,5 +12,9 @@ class EvidenceResponse(BaseModel):
     filename: str
     content_type: str
     file_size: int
-    storage_path: str
+    storage_path: str | None = None
+    cloudinary_public_id: str | None = None
+    cloudinary_asset_id: str | None = None
+    cloudinary_resource_type: str | None = None
+    cloudinary_delivery_type: str | None = None
     created_at: datetime

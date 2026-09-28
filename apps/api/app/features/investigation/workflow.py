@@ -11,19 +11,21 @@ from app.features.investigation.schema import InvestigationAIResult
 from app.features.investigation.repository import InvestigationRepository
 
 from app.features.evidence.repository import EvidenceRepository
+from app.features.evidence.storage import get_evidence_content_bytes
 
 from app.features.investigation.agents.llm_wrapper import get_llm
 
 @dataclass
 class InvestigationContext:
     db: Session
+    owner_id: str
 
 
 def load_incident(
     state: InvestigationState,
     runtime: Runtime[InvestigationContext],
 ) -> InvestigationState:
-    repository = IncidentRepository(runtime.context.db)
+    repository = IncidentRepository(runtime.context.db, runtime.context.owner_id)
 
     incident = repository.get_by_id(state["incident_id"])
 
@@ -56,17 +58,7 @@ def load_evidence(
     evidence = []
 
     for item in evidence_items:
-        path = Path(item.storage_path)
-
-        if not path.exists():
-            raise ValueError(
-                f"Evidence file not found: {item.filename}"
-            )
-
-        content = path.read_text(
-            encoding="utf-8",
-            errors="replace",
-        )
+        content = get_evidence_content_bytes(item).decode("utf-8", errors="replace")
 
         evidence.append(
             {

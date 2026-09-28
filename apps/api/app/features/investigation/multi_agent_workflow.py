@@ -38,6 +38,7 @@ def with_observability(node_name: str):
 
 from app.features.incident.repository import IncidentRepository
 from app.features.evidence.repository import EvidenceRepository
+from app.features.evidence.storage import get_evidence_content_bytes
 from app.features.investigation.multi_agent_contracts import (
     MultiAgentInvestigationState,
     MultiAgentHypothesis,
@@ -85,11 +86,7 @@ def load_incident_data(
     evidence_payload = []
 
     for item in evidence_items:
-        path = Path(item.storage_path)
-        if not path.exists():
-            raise ValueError(f"Evidence file not found: {item.filename}")
-
-        content = path.read_text(encoding="utf-8", errors="replace")
+        content = get_evidence_content_bytes(item).decode("utf-8", errors="replace")
         evidence_payload.append({
             "id": str(item.id),
             "filename": item.filename,

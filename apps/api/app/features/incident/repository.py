@@ -8,8 +8,9 @@ from app.features.incident.schema import IncidentCreate, IncidentUpdate
 
 
 class IncidentRepository:
-    def __init__(self, db: Session):
+    def __init__(self, db: Session, owner_id: str):
         self.db = db
+        self.owner_id = owner_id
 
     def create(self, incident: IncidentCreate) -> Incident:
         db_incident = Incident(
@@ -18,6 +19,7 @@ class IncidentRepository:
             severity=incident.severity,
             environment=incident.environment,
             service=incident.service,
+            owner_id=self.owner_id,
         )
 
         self.db.add(db_incident)
@@ -27,7 +29,10 @@ class IncidentRepository:
         return db_incident
 
     def get_by_id(self, incident_id: UUID) -> Incident | None:
-        statement = select(Incident).where(Incident.id == incident_id)
+        statement = select(Incident).where(
+            Incident.id == incident_id,
+            Incident.owner_id == self.owner_id
+        )
         return self.db.scalar(statement)
 
     def list(
@@ -38,7 +43,7 @@ class IncidentRepository:
         severity: str | None = None,
         status: str | None = None,
     ) -> list[Incident]:
-        statement = select(Incident)
+        statement = select(Incident).where(Incident.owner_id == self.owner_id)
 
         if severity:
             statement = statement.where(Incident.severity == severity)

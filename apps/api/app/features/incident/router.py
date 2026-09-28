@@ -3,6 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query, Response, status
 from sqlalchemy.orm import Session
 
+from app.core.auth import get_current_user_id
 from app.db.session import get_db
 from app.features.incident.schema import (
     IncidentCreate,
@@ -25,8 +26,9 @@ router = APIRouter(
 def create_incident(
     incident: IncidentCreate,
     db: Session = Depends(get_db),
+    owner_id: str = Depends(get_current_user_id),
 ):
-    service = IncidentService(db)
+    service = IncidentService(db, owner_id)
 
     return service.create_incident(incident)
 
@@ -41,8 +43,9 @@ def list_incidents(
     skip: int = Query(default=0, ge=0),
     limit: int = Query(default=20, ge=1, le=100),
     db: Session = Depends(get_db),
+    owner_id: str = Depends(get_current_user_id),
 ):
-    service = IncidentService(db)
+    service = IncidentService(db, owner_id)
 
     return service.list_incidents(
         skip=skip,
@@ -59,8 +62,9 @@ def list_incidents(
 def get_incident(
     incident_id: UUID,
     db: Session = Depends(get_db),
+    owner_id: str = Depends(get_current_user_id),
 ):
-    service = IncidentService(db)
+    service = IncidentService(db, owner_id)
 
     return service.get_incident(incident_id)
 
@@ -73,8 +77,9 @@ def update_incident(
     incident_id: UUID,
     data: IncidentUpdate,
     db: Session = Depends(get_db),
+    owner_id: str = Depends(get_current_user_id),
 ):
-    service = IncidentService(db)
+    service = IncidentService(db, owner_id)
 
     return service.update_incident(
         incident_id,
@@ -89,8 +94,9 @@ def update_incident(
 def delete_incident(
     incident_id: UUID,
     db: Session = Depends(get_db),
+    owner_id: str = Depends(get_current_user_id),
 ):
-    service = IncidentService(db)
+    service = IncidentService(db, owner_id)
 
     service.delete_incident(incident_id)
 

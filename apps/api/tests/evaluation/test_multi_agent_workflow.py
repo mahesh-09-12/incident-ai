@@ -117,15 +117,12 @@ def test_finalize_result_no_hypotheses_success():
 
 @patch("app.features.investigation.multi_agent_workflow.IncidentRepository")
 @patch("app.features.investigation.multi_agent_workflow.EvidenceRepository")
-@patch("app.features.investigation.multi_agent_workflow.Path")
-def test_load_incident_data(mock_path, mock_ev_repo, mock_inc_repo, mock_db_context):
+@patch("app.features.investigation.multi_agent_workflow.get_evidence_content_bytes")
+def test_load_incident_data(mock_get_content, mock_ev_repo, mock_inc_repo, mock_db_context):
     mock_inc_repo.return_value = mock_db_context["incident_repo"]
     mock_ev_repo.return_value = mock_db_context["evidence_repo"]
     
-    mock_path_instance = MagicMock()
-    mock_path_instance.exists.return_value = True
-    mock_path_instance.read_text.return_value = "timeout log entry"
-    mock_path.return_value = mock_path_instance
+    mock_get_content.return_value = b"timeout log entry"
     
     state = {"incident_id": uuid.uuid4()}
     runtime = MagicMock(context=MultiAgentContext(db=mock_db_context["db"]))

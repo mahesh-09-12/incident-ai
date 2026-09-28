@@ -22,9 +22,10 @@ from app.features.investigation.multi_agent_workflow import (
 
 
 class InvestigationService:
-    def __init__(self, db: Session):
+    def __init__(self, db: Session, owner_id: str):
         self.investigation_repository = InvestigationRepository(db)
-        self.incident_repository = IncidentRepository(db)
+        self.owner_id = owner_id
+        self.incident_repository = IncidentRepository(db, owner_id)
         self.evidence_repository = EvidenceRepository(db)
 
     def create_investigation(self, incident_id: UUID, background_tasks: BackgroundTasks):
@@ -58,12 +59,13 @@ class InvestigationService:
             self.run_investigation_background,
             investigation.id,
             incident_id,
+            self.owner_id,
         )
 
         return investigation
 
     @staticmethod
-    def run_investigation_background(investigation_id: UUID, incident_id: UUID):
+    def run_investigation_background(investigation_id: UUID, incident_id: UUID, owner_id: str):
         try:
             if settings.MULTI_AGENT_ENABLED:
                 db = SessionLocal()
@@ -73,7 +75,7 @@ class InvestigationService:
                     if not investigation:
                         return
                     
-                    incident_repo = IncidentRepository(db)
+                    incident_repo = IncidentRepository(db, owner_id)
                     evidence_repo = EvidenceRepository(db)
                     incident = incident_repo.get_by_id(incident_id)
                     if not incident:
@@ -89,14 +91,11 @@ class InvestigationService:
                         "status": incident.status,
                     }
 
-                    from pathlib import Path
+                    from app.features.evidence.storage import get_evidence_content_bytes
                     evidence_items = evidence_repo.list_by_incident(incident_id)
                     evidence_payload = []
                     for item in evidence_items:
-                        path = Path(item.storage_path)
-                        if not path.exists():
-                            raise Exception(f"Evidence file not found: {item.filename}")
-                        content = path.read_text(encoding="utf-8", errors="replace")
+                        content = get_evidence_content_bytes(item).decode("utf-8", errors="replace")
                         evidence_payload.append({
                             "id": str(item.id),
                             "filename": item.filename,
@@ -184,7 +183,8 @@ class InvestigationService:
                     graph.invoke(
                         initial_state,
                         context=InvestigationContext(
-                            db=db
+                            db=db,
+                            owner_id=owner_id,
                         ),
                     )
                 finally:
@@ -207,6 +207,14 @@ class InvestigationService:
         incident_id: UUID,
         investigation_id: UUID,
     ):
+        # Verify that the incident belongs to the authenticated owner
+        incident = self.incident_repository.get_by_id(incident_id)
+        if not incident:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Investigation not found",
+            )
+
         investigation = self.investigation_repository.get_by_id(
             investigation_id
         )

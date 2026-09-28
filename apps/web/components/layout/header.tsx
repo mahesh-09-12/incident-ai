@@ -1,6 +1,12 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import {
+  SignInButton,
+  SignUpButton,
+  Show,
+  UserButton,
+} from "@clerk/nextjs";
 
 interface HeaderProps {
   isMobileOpen: boolean;
@@ -55,7 +61,27 @@ export function Header({ isMobileOpen, onToggleMobile }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-3">
-        {/* Placeholder for future header actions */}
+        <Show when="signed-out">
+          <SignInButton mode="modal">
+            <button className="text-sm font-medium text-slate-300 hover:text-white transition-colors">
+              Sign In
+            </button>
+          </SignInButton>
+          <SignUpButton mode="modal">
+            <button className="text-sm font-medium bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-md transition-colors">
+              Sign Up
+            </button>
+          </SignUpButton>
+        </Show>
+        <Show when="signed-in">
+          <UserButton 
+            appearance={{
+              elements: {
+                userButtonAvatarBox: "h-8 w-8 rounded-md",
+              }
+            }}
+          />
+        </Show>
       </div>
     </header>
   );

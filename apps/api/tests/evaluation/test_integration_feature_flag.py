@@ -30,7 +30,7 @@ def test_single_agent_workflow_selection_by_default(
     mock_repo_instance.get_by_id.return_value = mock_investigation
 
     # Execute
-    InvestigationService.run_investigation_background(mock_investigation.id, uuid.uuid4())
+    InvestigationService.run_investigation_background(mock_investigation.id, uuid.uuid4(), 'user123')
     
     # Verify Single Agent triggered
     mock_single_graph.assert_called_once()
@@ -79,7 +79,7 @@ def test_multi_agent_workflow_selection_when_enabled(
     }
 
     # Execute
-    InvestigationService.run_investigation_background(mock_investigation.id, uuid.uuid4())
+    InvestigationService.run_investigation_background(mock_investigation.id, uuid.uuid4(), 'user123')
     
     # Verify Multi Agent triggered
     mock_multi_graph.invoke.assert_called_once()
@@ -126,7 +126,7 @@ def test_multi_agent_workflow_fails_gracefully(
         "errors": ["Validation Failed in Graph"]
     }
 
-    InvestigationService.run_investigation_background(mock_investigation.id, uuid.uuid4())
+    InvestigationService.run_investigation_background(mock_investigation.id, uuid.uuid4(), 'user123')
     
     # Verify failure handler triggers
     mock_repo_instance.mark_failed.assert_called_once_with(mock_investigation)

@@ -3,6 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, status, BackgroundTasks
 from sqlalchemy.orm import Session
 
+from app.core.auth import get_current_user_id
 from app.db.session import get_db
 from app.features.investigation.schema import InvestigationResponse
 from app.features.investigation.service import InvestigationService
@@ -22,8 +23,9 @@ def create_investigation(
     incident_id: UUID,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
+    owner_id: str = Depends(get_current_user_id),
 ):
-    service = InvestigationService(db)
+    service = InvestigationService(db, owner_id)
 
     return service.create_investigation(incident_id, background_tasks)
 
@@ -35,8 +37,9 @@ def create_investigation(
 def list_investigations(
     incident_id: UUID,
     db: Session = Depends(get_db),
+    owner_id: str = Depends(get_current_user_id),
 ):
-    service = InvestigationService(db)
+    service = InvestigationService(db, owner_id)
 
     return service.list_investigations(incident_id)
 
@@ -48,8 +51,9 @@ def get_investigation(
     incident_id: UUID,
     investigation_id: UUID,
     db: Session = Depends(get_db),
+    owner_id: str = Depends(get_current_user_id),
 ):
-    service = InvestigationService(db)
+    service = InvestigationService(db, owner_id)
 
     return service.get_investigation(
         incident_id,
